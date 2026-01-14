@@ -404,10 +404,6 @@ ORD-000001,PICKUP,2024-01-13T08:00:00,2024-01-13T12:00:00,CUST-001,SKU-001,2,AMB
   - 实现步骤建议
   - 常见问题解答
 
-- **[CODE_TEMPLATES.md](CODE_TEMPLATES.md)** - **代码模板参考**
-  - 实体类结构提示
-  - Service 类结构提示
-  - 代码示例（仅参考，需自己实现）
 
 ### 官方文档
 - **Spring Boot**: https://spring.io/projects/spring-boot

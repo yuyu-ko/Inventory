@@ -21,10 +21,6 @@
   - Service 类结构提示
   - 代码示例（仅参考）
 
-- **[STUDENT_QUICKSTART.md](STUDENT_QUICKSTART.md)** - **快速开始指南**
-  - 5分钟快速上手
-  - 第一周必须完成的任务
-  - 常见问题快速解决
 
 - **[WEEKLY_PLAN.md](WEEKLY_PLAN.md)** - **四周详细计划**
   - 每日任务清单
