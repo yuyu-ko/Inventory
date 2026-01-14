@@ -1,0 +1,95 @@
+spring:
+  application:
+    name: inventory-simulator
+
+  # Server Configuration
+  server:
+    port: 8080
+    error:
+      include-message: always
+      include-stacktrace: on_param
+
+  # RabbitMQ Configuration
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    publisher-confirms: true
+    publisher-returns: true
+    template:
+      mandatory: true
+    # 连接失败时不阻止应用启动
+    listener:
+      simple:
+        retry:
+          enabled: true
+          initial-interval: 1000
+          max-attempts: 3
+    # 自动恢复连接
+    connection-timeout: 10000
+
+  # H2 Database Configuration
+  datasource:
+    url: jdbc:h2:mem:inventorydb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+  # Jackson Configuration for Java 8 Time support
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+# Application Configuration
+inventory:
+  simulation:
+    enabled: true
+    sim-start-time: "2024-01-13T08:00:00"  # 模拟开始时间
+    sim-end-time: "2024-01-13T18:00:00"    # 模拟结束时间
+    tick-seconds: 60                        # 每次 tick 增加的秒数
+    tick-interval-ms: 1000                 # tick 间隔（毫秒）
+    speed-factor: 2.0                      # 加速因子（1.0 = 正常速度，2.0 = 2倍速）
+  
+  order-injector:
+    enabled: true
+    injection-interval-seconds: 5
+    use-csv: true  # 使用 CSV 文件读取订单
+    csv-file: data/orders_sample.csv  # CSV 文件路径（相对于 resources 目录）
+  
+  inventory:
+    csv-file: data/inventory_sample.csv  # 库存 CSV 文件路径
+    auto-initialize: true                # 启动时自动从 CSV 初始化库存
+    initial-stock: 1000                  # 默认初始库存（CSV 中未指定时使用）
+    low-stock-threshold: 100             # 默认低库存阈值（CSV 中未指定时使用）
+    replenishment-quantity: 500          # 自动补货数量
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.inventory: INFO
+    org.springframework.amqp: WARN
+    org.hibernate: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+    org.springframework.web: INFO
+  pattern:
+    console: "[%d{yyyy-MM-dd HH:mm:ss}] %msg%n"
