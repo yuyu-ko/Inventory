@@ -627,12 +627,13 @@ scrape_configs:
 
 #### 任务清单
 - [ ] **创建订单处理 Dashboard**
-  - 订单接收总数（Stat Panel）
-  - 订单成功/失败数（Time Series）
-  - 订单成功率（Gauge）
-  - 平均订单处理时间（Time Series）
+  - 订单接收总数（Stat Panel）- 使用 PromQL 或 LogQL
+  - 订单成功/失败数（Time Series）- 使用 PromQL 或 LogQL
+  - 订单成功率（Gauge）- 使用 PromQL 或 LogQL
+  - 平均订单处理时间（Time Series）- 使用 PromQL
+  - 订单日志查看（Logs Panel）- 使用 LogQL
 
-- [ ] **常用 PromQL 查询**
+- [ ] **常用 PromQL 查询（Prometheus 指标）**
   ```promql
   # 订单接收总数（时间范围内）
   sum(increase(orders_received_total[$__range]))
@@ -651,6 +652,51 @@ scrape_configs:
   sum(increase(orders_processing_time_seconds_sum[$__range])) 
   / sum(increase(orders_processing_time_seconds_count[$__range]))
   ```
+
+- [ ] **常用 LogQL 查询（Loki 日志）**
+  ```logql
+  # 成功订单数量（时间范围内）
+  sum(
+    count_over_time(
+      {application="inventory-simulator"} 
+      |= "ORDER_COMPLETED" 
+      [5m]
+    )
+  )
+  
+  # 失败订单数量（时间范围内）
+  sum(
+    count_over_time(
+      {application="inventory-simulator"} 
+      |= "ORDER_FAILED" 
+      [5m]
+    )
+  )
+  
+  # 总订单数量（成功+失败）
+  sum(
+    count_over_time(
+      {application="inventory-simulator"} 
+      |~ "ORDER_COMPLETED|ORDER_FAILED" 
+      [5m]
+    )
+  )
+  
+  # 成功率百分比
+  (
+    sum(count_over_time({application="inventory-simulator"} |= "ORDER_COMPLETED" [5m]))
+    /
+    sum(count_over_time({application="inventory-simulator"} |~ "ORDER_COMPLETED|ORDER_FAILED" [5m]))
+  ) * 100
+  
+  # 查看所有成功订单日志
+  {application="inventory-simulator"} |= "ORDER_COMPLETED"
+  
+  # 查看所有失败订单日志
+  {application="inventory-simulator"} |= "ORDER_FAILED"
+  ```
+  
+  > 注意：时间范围 `[5m]` 会根据 Grafana 的时间选择器自动调整
 
 - [ ] **优化 Dashboard**
   - 设置合适的刷新间隔
@@ -733,6 +779,400 @@ scrape_configs:
 | Day 36-37 | Dashboard 创建 | ⬜ | |
 | Day 38 | 测试与文档 | ⬜ | |
 
+### Week 6（扩展功能）
+| 日期 | 任务 | 状态 | 备注 |
+|------|------|------|------|
+| Day 39-40 | 数据库迁移到 PostgreSQL | ⬜ | 提升扩展性 |
+| Day 41-42 | 性能优化 | ⬜ | 可选 |
+| Day 43-44 | 安全增强 | ⬜ | 可选 |
+
+### Week 7（测试与API文档）
+| 日期 | 任务 | 状态 | 备注 |
+|------|------|------|------|
+| Day 45-46 | 单元测试与集成测试 | ⬜ | 提升代码质量 |
+| Day 47-48 | API 文档（Swagger/OpenAPI） | ⬜ | 提升API可用性 |
+| Day 49-50 | 缓存优化（Redis） | ⬜ | 可选 |
+
+### Week 8（部署与优化）
+| 日期 | 任务 | 状态 | 备注 |
+|------|------|------|------|
+| Day 51-52 | Docker 容器化应用 | ⬜ | 提升部署能力 |
+| Day 53-54 | CI/CD 流程 | ⬜ | 可选 |
+| Day 55-56 | 性能测试与优化 | ⬜ | 可选 |
+
+---
+
+## 📅 Week 6: 扩展功能与优化（可选）
+
+### Day 39-40: 数据库迁移到 PostgreSQL
+
+#### 任务清单
+- [ ] **添加 PostgreSQL 依赖**
+  ```xml
+  <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>runtime</scope>
+  </dependency>
+  ```
+
+- [ ] **配置 PostgreSQL 连接**
+  ```yaml
+  spring:
+    datasource:
+      url: jdbc:postgresql://localhost:5432/inventorydb
+      driver-class-name: org.postgresql.Driver
+      username: inventory
+      password: inventory
+    jpa:
+      database-platform: org.hibernate.dialect.PostgreSQLDialect
+      hibernate:
+        ddl-auto: update
+  ```
+
+- [ ] **在 docker-compose.yml 中添加 PostgreSQL**
+  ```yaml
+  postgres:
+    image: postgres:15-alpine
+    container_name: inventory-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: inventorydb
+      POSTGRES_USER: inventory
+      POSTGRES_PASSWORD: inventory
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  ```
+
+- [ ] **测试数据持久化**
+  - 重启应用，确认数据保留
+  - 验证表结构正确创建
+  - 测试数据查询性能
+
+#### 学习目标
+- 理解生产环境数据库选择
+- 掌握数据库迁移方法
+- 理解数据持久化的重要性
+- 学习 PostgreSQL 基本配置
+
+#### 优势说明
+- ✅ **数据持久化**：数据不会因应用重启而丢失
+- ✅ **扩展性**：支持更大数据量和并发
+- ✅ **生产就绪**：适合部署到生产环境
+- ✅ **性能优化**：支持索引、查询优化等高级功能
+
+#### 交付物
+- ✅ PostgreSQL 配置完成
+- ✅ 数据迁移成功
+- ✅ 数据持久化验证通过
+
+---
+
+### Day 41-42: 性能优化（可选）
+
+#### 任务清单
+- [ ] **连接池优化**
+  - 配置 HikariCP 连接池参数
+  - 优化连接数配置
+
+- [ ] **查询优化**
+  - 添加数据库索引
+  - 优化 JPA 查询
+
+- [ ] **批量处理优化**
+  - 实现批量插入/更新
+  - 优化 CSV 数据加载
+
+#### 交付物
+- ✅ 性能优化完成
+- ✅ 性能测试通过
+
+---
+
+### Day 43-44: 安全增强（可选）
+
+#### 任务清单
+- [ ] **API 安全**
+  - 添加 API 认证
+  - 实现权限控制
+
+- [ ] **数据安全**
+  - 敏感数据加密
+  - SQL 注入防护
+
+#### 交付物
+- ✅ 安全功能实现
+- ✅ 安全测试通过
+
+---
+
+## 📅 Week 7: 测试与 API 文档
+
+### Day 45-46: 单元测试与集成测试
+
+#### 任务清单
+- [ ] **添加测试依赖**
+  ```xml
+  <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+  </dependency>
+  <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>test</scope>
+  </dependency>
+  ```
+
+- [ ] **编写单元测试**
+  - OrderManager 测试
+  - InventoryManager 测试
+  - Repository 测试
+  - Service 方法测试
+
+- [ ] **编写集成测试**
+  - 订单处理流程测试
+  - 库存管理流程测试
+  - 消息队列集成测试
+
+- [ ] **测试覆盖率**
+  - 目标：核心业务逻辑覆盖率 > 70%
+  - 使用 JaCoCo 生成覆盖率报告
+
+#### 学习目标
+- 掌握 Spring Boot 测试框架
+- 理解单元测试和集成测试的区别
+- 学会使用 Mockito 进行 Mock 测试
+- 理解测试驱动开发（TDD）
+
+#### 交付物
+- ✅ 单元测试编写完成
+- ✅ 集成测试编写完成
+- ✅ 测试覆盖率报告
+
+---
+
+### Day 47-48: API 文档（Swagger/OpenAPI）
+
+#### 任务清单
+- [ ] **添加 Swagger/OpenAPI 依赖**
+  ```xml
+  <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+      <version>2.2.0</version>
+  </dependency>
+  ```
+
+- [ ] **配置 Swagger**
+  ```yaml
+  springdoc:
+    api-docs:
+      path: /api-docs
+    swagger-ui:
+      path: /swagger-ui.html
+  ```
+
+- [ ] **添加 API 注解**
+  - `@Operation` - 描述 API 操作
+  - `@ApiResponse` - 描述响应
+  - `@Parameter` - 描述参数
+  - `@Schema` - 描述数据模型
+
+- [ ] **测试 API 文档**
+  - 访问 http://localhost:8080/swagger-ui.html
+  - 验证所有 API 端点都有文档
+  - 测试 API 文档中的 Try it out 功能
+
+#### 学习目标
+- 理解 API 文档的重要性
+- 掌握 OpenAPI/Swagger 规范
+- 学会编写清晰的 API 文档
+
+#### 交付物
+- ✅ Swagger UI 可访问
+- ✅ 所有 API 端点都有文档
+- ✅ API 文档清晰完整
+
+---
+
+### Day 49-50: 缓存优化（Redis - 可选）
+
+#### 任务清单
+- [ ] **添加 Redis 依赖**
+  ```xml
+  <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-redis</artifactId>
+  </dependency>
+  ```
+
+- [ ] **在 docker-compose.yml 中添加 Redis**
+  ```yaml
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+  ```
+
+- [ ] **配置 Redis 缓存**
+  ```yaml
+  spring:
+    data:
+      redis:
+        host: localhost
+        port: 6379
+    cache:
+      type: redis
+  ```
+
+- [ ] **实现缓存**
+  - 库存查询缓存（`@Cacheable`）
+  - 订单查询缓存
+  - 缓存更新策略
+
+#### 学习目标
+- 理解缓存的作用和优势
+- 掌握 Spring Cache 抽象
+- 学会 Redis 基本使用
+
+#### 交付物
+- ✅ Redis 配置完成
+- ✅ 缓存功能实现
+- ✅ 性能提升验证
+
+---
+
+## 📅 Week 8: 部署与优化
+
+### Day 51-52: Docker 容器化应用
+
+#### 任务清单
+- [ ] **创建 Dockerfile**
+  ```dockerfile
+  FROM openjdk:17-jdk-slim
+  WORKDIR /app
+  COPY target/inventory-simulator-*.jar app.jar
+  EXPOSE 8080
+  ENTRYPOINT ["java", "-jar", "app.jar"]
+  ```
+
+- [ ] **创建 .dockerignore**
+  ```
+  target/
+  .git/
+  .idea/
+  *.iml
+  ```
+
+- [ ] **构建 Docker 镜像**
+  ```bash
+  docker build -t inventory-simulator:latest .
+  ```
+
+- [ ] **更新 docker-compose.yml**
+  - 添加应用服务
+  - 配置服务依赖
+  - 配置网络
+
+- [ ] **测试容器化部署**
+  ```bash
+  docker-compose up -d
+  ```
+
+#### 学习目标
+- 理解容器化部署的优势
+- 掌握 Docker 基本使用
+- 学会编写 Dockerfile
+- 理解 Docker Compose 多容器编排
+
+#### 交付物
+- ✅ Dockerfile 创建完成
+- ✅ Docker 镜像构建成功
+- ✅ docker-compose.yml 包含所有服务
+- ✅ 容器化部署测试通过
+
+---
+
+### Day 53-54: CI/CD 流程（可选）
+
+#### 任务清单
+- [ ] **配置 GitHub Actions（或其他 CI/CD）**
+  ```yaml
+  name: CI/CD Pipeline
+  on:
+    push:
+      branches: [ main ]
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - name: Set up JDK 17
+          uses: actions/setup-java@v3
+          with:
+            java-version: '17'
+        - name: Build with Maven
+          run: mvn clean package
+        - name: Run tests
+          run: mvn test
+  ```
+
+- [ ] **自动化测试**
+  - 代码提交时自动运行测试
+  - 测试失败时阻止合并
+
+- [ ] **自动化构建**
+  - 构建 Docker 镜像
+  - 推送到镜像仓库（可选）
+
+#### 学习目标
+- 理解 CI/CD 的概念和作用
+- 掌握 GitHub Actions 基本使用
+- 学会自动化构建和测试流程
+
+#### 交付物
+- ✅ CI/CD 流程配置完成
+- ✅ 自动化测试运行正常
+- ✅ 自动化构建成功
+
+---
+
+### Day 55-56: 性能测试与优化
+
+#### 任务清单
+- [ ] **性能测试**
+  - 使用 JMeter 或 Gatling 进行压力测试
+  - 测试订单处理吞吐量
+  - 测试并发处理能力
+
+- [ ] **性能分析**
+  - 识别性能瓶颈
+  - 分析数据库查询性能
+  - 分析消息队列处理性能
+
+- [ ] **性能优化**
+  - 数据库索引优化
+  - 查询优化
+  - 连接池优化
+  - 批量处理优化
+
+- [ ] **性能报告**
+  - 记录优化前后的性能对比
+  - 总结优化经验
+
+#### 学习目标
+- 理解性能测试的重要性
+- 掌握性能测试工具使用
+- 学会性能分析和优化方法
+
+#### 交付物
+- ✅ 性能测试完成
+- ✅ 性能优化实施
+- ✅ 性能报告文档
+
 ---
 
 ## 💡 每日检查清单
@@ -752,6 +1192,48 @@ scrape_configs:
 - **Week 3 结束**：完整功能实现完成
 - **Week 4 结束**：项目完成，可以演示
 - **Week 5 结束**（进阶）：监控系统完成，项目全面完善
+- **Week 6 结束**（扩展）：数据库迁移完成，系统扩展性提升
+- **Week 7 结束**（扩展）：测试与 API 文档完成，代码质量提升
+- **Week 8 结束**（扩展）：部署与优化完成，项目生产就绪
+
+---
+
+## 🔄 扩展功能说明
+
+### 为什么需要扩展功能？
+
+项目初始使用 **H2 内存数据库**，适合快速开发和测试：
+- ✅ 无需安装配置
+- ✅ 启动快速
+- ✅ 适合学习和原型开发
+
+但 H2 的限制：
+- ❌ 数据不持久化（应用重启数据丢失）
+- ❌ 不适合生产环境
+- ❌ 扩展性有限
+
+### Week 6: 迁移到 PostgreSQL
+
+**目标**：将系统从 H2 迁移到 PostgreSQL，提升系统扩展性和生产就绪性。
+
+**学习价值**：
+- 理解不同数据库的适用场景
+- 掌握数据库迁移方法
+- 学习生产环境数据库配置
+- 理解数据持久化的重要性
+
+**实施步骤**：
+1. 添加 PostgreSQL 依赖
+2. 配置数据库连接
+3. 在 docker-compose.yml 中添加 PostgreSQL 服务
+4. 更新 application.yml 配置
+5. 测试数据持久化
+
+**预期收益**：
+- ✅ 数据持久化，应用重启不丢失
+- ✅ 支持更大数据量和并发
+- ✅ 适合部署到生产环境
+- ✅ 学习生产级数据库使用
 
 ---
 

@@ -34,7 +34,7 @@
         ▼                     ▼                     ▼
 ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
 │  Simulation  │    │  订单数据库   │    │  库存数据库   │
-│    Clock     │    │  (H2)        │    │  (H2)        │
+│    Clock     │    │  (H2/PostgreSQL)│  │  (H2/PostgreSQL)│
 │  模拟时钟    │    └──────────────┘    └──────────────┘
 └──────────────┘
         │
@@ -329,7 +329,7 @@
 
 - **框架**: Spring Boot 3.2.0
 - **消息队列**: RabbitMQ (Spring AMQP)
-- **数据库**: H2 (内存数据库)
+- **数据库**: H2 (内存数据库，开发环境) / PostgreSQL (生产环境，Week 6 扩展)
 - **ORM**: Spring Data JPA
 - **CSV 处理**: OpenCSV
 - **监控**: Spring Boot Actuator + Micrometer Prometheus
@@ -428,6 +428,36 @@ ORD-000001,PICKUP,2024-01-13T08:00:00,2024-01-13T12:00:00,CUST-001,SKU-003,1,CHI
    - 默认账号: admin/admin
    - 在 Grafana 中添加 Prometheus 数据源（URL: `http://prometheus:9090`）
 
+## 扩展功能（Week 6 - 可选）
+
+### 数据库迁移到 PostgreSQL
+
+**为什么需要迁移？**
+
+项目初始使用 **H2 内存数据库**，适合快速开发和学习：
+- ✅ 无需安装配置，启动快速
+- ✅ 适合学习和原型开发
+
+但 H2 的限制：
+- ❌ 数据不持久化（应用重启数据丢失）
+- ❌ 不适合生产环境
+- ❌ 扩展性有限
+
+**迁移到 PostgreSQL 的优势**：
+- ✅ **数据持久化**：数据不会因应用重启而丢失
+- ✅ **扩展性**：支持更大数据量和并发访问
+- ✅ **生产就绪**：适合部署到生产环境
+- ✅ **性能优化**：支持索引、查询优化等高级功能
+
+**迁移步骤**：
+1. 添加 PostgreSQL 依赖到 `pom.xml`
+2. 在 `docker-compose.yml` 中添加 PostgreSQL 服务
+3. 更新 `application.yml` 数据库配置
+4. 配置数据库连接池（HikariCP）
+5. 测试数据持久化功能
+
+详细说明请参考 [WEEKLY_PLAN.md](WEEKLY_PLAN.md) 的 Week 6 部分。
+
 ## 系统特点
 
 1. **模拟时钟系统**: 使用 SimulationClock 管理模拟时间，支持时间范围配置和加速运行
@@ -442,9 +472,61 @@ ORD-000001,PICKUP,2024-01-13T08:00:00,2024-01-13T12:00:00,CUST-001,SKU-003,1,CHI
 
 ## 扩展建议
 
+### Week 6: 数据库迁移到 PostgreSQL（推荐）
+
+**目标**：将系统从 H2 迁移到 PostgreSQL，提升系统扩展性和生产就绪性
+
+**优势**：
+- ✅ 数据持久化，应用重启不丢失数据
+- ✅ 支持更大数据量和并发访问
+- ✅ 适合部署到生产环境
+- ✅ 学习生产级数据库配置和使用
+
+**实施步骤**：
+1. 添加 PostgreSQL 依赖
+2. 在 docker-compose.yml 中添加 PostgreSQL 服务
+3. 更新 application.yml 数据库配置
+4. 测试数据持久化功能
+
+详细说明请参考 [WEEKLY_PLAN.md](WEEKLY_PLAN.md) 的 Week 6 部分。
+
+### Week 7: 测试与 API 文档（可选）
+
+**目标**：提升代码质量和 API 可用性
+
+**任务清单**：
+- 单元测试和集成测试编写
+- Swagger/OpenAPI API 文档生成
+- Redis 缓存优化（可选）
+
+**学习价值**：
+- 理解测试驱动开发（TDD）
+- 掌握 API 文档编写规范
+- 学习缓存优化策略
+
+详细说明请参考 [WEEKLY_PLAN.md](WEEKLY_PLAN.md) 的 Week 7 部分。
+
+### Week 8: 部署与优化（可选）
+
+**目标**：实现生产就绪的部署方案
+
+**任务清单**：
+- Docker 容器化应用
+- CI/CD 流程配置
+- 性能测试与优化
+
+**学习价值**：
+- 理解容器化部署
+- 掌握 CI/CD 流程
+- 学习性能优化方法
+
+详细说明请参考 [WEEKLY_PLAN.md](WEEKLY_PLAN.md) 的 Week 8 部分。
+
+### 其他扩展建议（可选）
+
 1. **添加更多组件**: 如 Pick Station、Tote Manager 等
-2. **持久化存储**: 将 H2 替换为 PostgreSQL 或 MySQL
-3. **监控和日志**: 集成 Spring Boot Actuator 和日志聚合
-4. **分布式追踪**: 集成 Zipkin 或 Jaeger
-5. **性能优化**: 添加缓存、批量处理等优化措施
+2. **分布式追踪**: 集成 Zipkin 或 Jaeger
+3. **安全增强**: 添加认证授权、API 安全等
+4. **消息重试机制**: 实现消息处理失败重试
+5. **批量处理优化**: 实现批量订单处理
 6. **模拟时间同步**: 支持多实例之间的模拟时间同步

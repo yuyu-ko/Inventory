@@ -86,13 +86,24 @@ logging:
   level:
     root: INFO
     com.inventory: INFO
+    com.inventory.service.OrderManager: INFO
     org.springframework.amqp: WARN
     org.hibernate: WARN
     org.hibernate.SQL: WARN
     org.hibernate.type.descriptor.sql.BasicBinder: WARN
     org.springframework.web: INFO
   pattern:
-    console: "[%d{yyyy-MM-dd HH:mm:ss}] %msg%n"
+    console: "[%d{HH:mm:ss}] %msg%n"
+  config: classpath:logback-spring.xml
+
+# Loki Configuration
+loki:
+  enabled: true
+  url: http://localhost:3100/loki/api/v1/push
+  batch:
+    max-items: 100
+    max-bytes: 1048576
+    timeout: 5s
 
 management:
   endpoints:

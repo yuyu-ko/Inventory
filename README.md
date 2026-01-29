@@ -15,19 +15,35 @@
 - ✅ **Order Manager (订单处理器)**: 接收订单、检查库存、处理订单
 - ✅ **Inventory Manager (库存管理器)**: 管理库存、预留、扣除、自动补货
 - ✅ **监控与可视化**: 集成 Prometheus + Grafana，实时监控订单处理状况、成功率、处理时间等指标
+- ✅ **日志管理**: 集成 Grafana Loki，收集和查询订单处理日志，支持结构化日志查询
 
 ## 技术栈
 
 - Spring Boot 3.2.0
 - RabbitMQ (Spring AMQP)
-- H2 Database (内存数据库)
+- H2 Database (内存数据库) / PostgreSQL (生产环境，Week 6 扩展)
 - Spring Data JPA
 - OpenCSV (CSV 文件读取)
 - Spring Boot Actuator (Metrics)
 - Prometheus (Metrics Collection)
 - Grafana (Monitoring Dashboard)
+- Grafana Loki (Log Management)
 - Maven
 - Java 17
+
+## 可扩展功能
+
+项目设计支持以下扩展功能，适合进阶学习：
+
+- 🔄 **数据库迁移**（Week 6）：从 H2 内存数据库迁移到 PostgreSQL，提升系统扩展性和数据持久化能力
+- 📊 **监控增强**（Week 5）：集成 Prometheus + Grafana + Loki 完整监控栈
+- 🔍 **日志分析**（Week 5）：使用 Grafana Loki 进行结构化日志查询和分析
+- 🧪 **测试与文档**（Week 7）：单元测试、集成测试、Swagger API 文档
+- ⚡ **缓存优化**（Week 7）：集成 Redis 缓存，提升查询性能
+- 🐳 **容器化部署**（Week 8）：Docker 容器化、Docker Compose 编排
+- 🔄 **CI/CD 流程**（Week 8）：自动化构建、测试、部署流程
+- 🚀 **性能优化**（Week 8）：性能测试、瓶颈分析、优化实施
+- 🔐 **安全增强**（可选）：添加认证授权、API 安全等
 
 ## 快速开始
 
@@ -139,33 +155,60 @@ SimulationClock → Order Injector → RabbitMQ → Order Manager → Inventory 
 ## 项目结构
 
 ```
-src/main/java/com/inventory/
-├── InventorySimulatorApplication.java  # 主应用类
-├── config/
-│   └── RabbitMQConfig.java             # RabbitMQ 配置
-├── controller/
-│   ├── OrderController.java            # 订单 REST API
-│   ├── InventoryController.java        # 库存 REST API
-│   └── HealthController.java           # 健康检查 API
-├── message/
-│   ├── OrderReceivedMessage.java       # 订单接收消息
-│   ├── InventoryUpdateMessage.java     # 库存更新消息
-│   └── OrderProcessedMessage.java      # 订单处理消息
-├── model/
-│   ├── Order.java                      # 订单实体
-│   ├── OrderItem.java                  # 订单项实体
-│   ├── InventoryItem.java              # 库存项实体
-│   └── OrderCSVRecord.java             # CSV 订单记录
-├── repository/
-│   ├── OrderRepository.java            # 订单仓库
-│   └── InventoryItemRepository.java    # 库存仓库
-└── service/
-    ├── SimulationClock.java            # 模拟时钟
-    ├── SimulationRunner.java           # 模拟运行器
-    ├── OrderCSVReader.java             # CSV 订单读取器
-    ├── OrderInjector.java              # 订单注入器
-    ├── OrderManager.java               # 订单处理器
-    └── InventoryManager.java           # 库存管理器
+Inventory/
+├── src/main/
+│   ├── java/com/inventory/
+│   │   ├── InventorySimulatorApplication.java  # 主应用类
+│   │   ├── config/
+│   │   │   └── RabbitMQConfig.java             # RabbitMQ 配置
+│   │   ├── controller/
+│   │   │   ├── OrderController.java            # 订单 REST API
+│   │   │   ├── InventoryController.java        # 库存 REST API
+│   │   │   └── HealthController.java            # 健康检查 API
+│   │   ├── message/
+│   │   │   ├── OrderReceivedMessage.java       # 订单接收消息
+│   │   │   ├── InventoryUpdateMessage.java     # 库存更新消息
+│   │   │   └── OrderProcessedMessage.java       # 订单处理消息
+│   │   ├── model/
+│   │   │   ├── Order.java                      # 订单实体
+│   │   │   ├── OrderItem.java                  # 订单项实体
+│   │   │   ├── InventoryItem.java              # 库存项实体
+│   │   │   └── OrderCSVRecord.java             # CSV 订单记录
+│   │   ├── repository/
+│   │   │   ├── OrderRepository.java            # 订单仓库
+│   │   │   └── InventoryItemRepository.java    # 库存仓库
+│   │   └── service/
+│   │       ├── SimulationClock.java            # 模拟时钟
+│   │       ├── SimulationRunner.java           # 模拟运行器
+│   │       ├── OrderCSVReader.java             # CSV 订单读取器
+│   │       ├── OrderInjector.java              # 订单注入器
+│   │       ├── OrderManager.java               # 订单处理器
+│   │       └── InventoryManager.java           # 库存管理器
+│   └── resources/
+│       ├── application.yml                      # 应用配置
+│       ├── logback-spring.xml                   # Logback 日志配置（Loki）
+│       └── data/
+│           ├── orders_sample.csv                # 订单样本数据
+│           └── inventory_sample.csv             # 库存样本数据
+├── monitoring/                                  # 监控配置目录
+│   ├── grafana/
+│   │   └── provisioning/
+│   │       └── datasources/
+│   │           └── loki.yml                    # Grafana Loki 数据源配置
+│   ├── loki-config.yaml                        # Loki 配置文件
+│   └── prometheus.yml                          # Prometheus 配置文件
+├── docs/                                        # 文档目录
+│   ├── STUDENT_GUIDE.md                        # 学生项目指南
+│   ├── WEEKLY_PLAN.md                          # 周计划（Week 1-8）
+│   ├── HOW_TO_START.md                         # 快速开始指南
+│   ├── IMPLEMENTATION_GUIDE.md                 # 实现指南
+│   ├── CODE_TEMPLATES.md                       # 代码模板
+│   ├── SYSTEM_DESIGN.md                        # 系统设计文档
+│   └── ...                                      # 其他文档
+├── docker-compose.yml                           # Docker Compose 配置
+├── pom.xml                                      # Maven 项目配置
+├── README.md                                    # 项目说明文档
+└── backups/                                     # Grafana 备份目录（.gitignore）
 ```
 
 ## 配置说明
@@ -235,6 +278,63 @@ ORD-000001,PICKUP,2024-01-13T08:00:00,2024-01-13T12:00:00,CUST-001,SKU-003,1,CHI
 [08:00:02] ord-000002 received
 [08:00:03] ord-000002 completed successfully
 ```
+
+### 结构化日志
+
+系统同时输出结构化日志到 Grafana Loki，便于查询和分析：
+
+- **订单接收**: `ORDER_RECEIVED | orderId=ORD-000001 | orderType=PICKUP | ...`
+- **订单处理**: `ORDER_PROCESSING | orderId=ord-000001 | status=PROCESSING | ...`
+- **订单完成**: `ORDER_COMPLETED | orderId=ord-000001 | items=[SKU-001:2] | ...`
+- **订单失败**: `ORDER_FAILED | orderId=ord-000002 | reason=INSUFFICIENT_INVENTORY | ...`
+
+### LogQL 查询示例
+
+在 Grafana 中使用 LogQL 查询订单统计：
+
+**成功订单数量（时间范围内）：**
+```logql
+sum(
+  count_over_time(
+    {application="inventory-simulator"} 
+    |= "ORDER_COMPLETED" 
+    [5m]
+  )
+)
+```
+
+**失败订单数量（时间范围内）：**
+```logql
+sum(
+  count_over_time(
+    {application="inventory-simulator"} 
+    |= "ORDER_FAILED" 
+    [5m]
+  )
+)
+```
+
+**总订单数量（成功+失败）：**
+```logql
+sum(
+  count_over_time(
+    {application="inventory-simulator"} 
+    |~ "ORDER_COMPLETED|ORDER_FAILED" 
+    [5m]
+  )
+)
+```
+
+**成功率百分比：**
+```logql
+(
+  sum(count_over_time({application="inventory-simulator"} |= "ORDER_COMPLETED" [5m]))
+  /
+  sum(count_over_time({application="inventory-simulator"} |~ "ORDER_COMPLETED|ORDER_FAILED" [5m]))
+) * 100
+```
+
+> 注意：时间范围 `[5m]` 会根据 Grafana 的时间选择器自动调整
 
 Hibernate SQL 日志已关闭，减少日志噪音。
 

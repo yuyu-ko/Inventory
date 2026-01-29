@@ -34,3 +34,7 @@ logs/
 # Application
 application-local.yml
 application-dev.yml
+
+# Backups
+backups/
+*.tar.gz

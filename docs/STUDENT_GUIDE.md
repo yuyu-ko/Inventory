@@ -42,12 +42,13 @@
 
 - **后端框架**: Spring Boot 3.2.0
 - **消息队列**: RabbitMQ (Spring AMQP)
-- **数据库**: H2 (内存数据库，易于开发)
+- **数据库**: H2 (内存数据库，易于开发) / PostgreSQL (Week 6 扩展，生产环境)
 - **ORM**: Spring Data JPA
 - **CSV 处理**: OpenCSV
 - **监控**: Spring Boot Actuator + Micrometer Prometheus
 - **指标收集**: Prometheus
 - **可视化**: Grafana
+- **日志管理**: Grafana Loki
 - **构建工具**: Maven
 - **语言**: Java 17
 
@@ -261,7 +262,10 @@ ORD-000001,PICKUP,2024-01-13T08:00:00,2024-01-13T12:00:00,CUST-001,SKU-001,2,AMB
 
 **目标**：完善功能，优化代码，编写文档
 
-**注意**：Week 4 是基础项目的完成，Week 5 是进阶监控功能（可选）
+**注意**：
+- Week 4 是基础项目的完成
+- Week 5 是进阶监控功能（可选）
+- Week 6 是扩展功能，将 H2 迁移到 PostgreSQL 以提升扩展性（可选）
 
 #### Day 22-24: REST API 实现
 - [ ] 创建 `OrderController`
@@ -371,6 +375,51 @@ ORD-000001,PICKUP,2024-01-13T08:00:00,2024-01-13T12:00:00,CUST-001,SKU-001,2,AMB
 
 ---
 
+### 第六周：扩展功能（Week 6 - 可选）
+
+**目标**：将系统从 H2 迁移到 PostgreSQL，提升系统扩展性和生产就绪性
+
+**注意**：这是扩展内容，适合想要深入学习生产环境配置的学生
+
+#### Day 39-40: 数据库迁移到 PostgreSQL
+
+**为什么需要迁移？**
+
+项目初始使用 **H2 内存数据库**，适合快速开发：
+- ✅ 无需安装配置，启动快速
+- ✅ 适合学习和原型开发
+
+但 H2 的限制：
+- ❌ 数据不持久化（应用重启数据丢失）
+- ❌ 不适合生产环境
+- ❌ 扩展性有限
+
+**迁移到 PostgreSQL 的优势**：
+- ✅ **数据持久化**：数据不会因应用重启而丢失
+- ✅ **扩展性**：支持更大数据量和并发访问
+- ✅ **生产就绪**：适合部署到生产环境
+- ✅ **性能优化**：支持索引、查询优化等高级功能
+
+**任务清单**：
+- [ ] 添加 PostgreSQL 依赖到 `pom.xml`
+- [ ] 在 `docker-compose.yml` 中添加 PostgreSQL 服务
+- [ ] 更新 `application.yml` 数据库配置
+- [ ] 配置数据库连接池（HikariCP）
+- [ ] 测试数据持久化功能
+- [ ] 验证表结构正确创建
+
+**学习资源**：
+- PostgreSQL 官方文档：https://www.postgresql.org/docs/
+- Spring Data JPA 数据库配置：https://spring.io/guides/gs/accessing-data-jpa/
+
+**验收标准**：
+- ✅ PostgreSQL 容器正常运行
+- ✅ 应用能够连接 PostgreSQL
+- ✅ 数据持久化验证通过（重启后数据保留）
+- ✅ 表结构正确创建
+
+---
+
 ## 📖 每周学习重点
 
 ### Week 1 重点：基础架构
@@ -396,6 +445,22 @@ ORD-000001,PICKUP,2024-01-13T08:00:00,2024-01-13T12:00:00,CUST-001,SKU-001,2,AMB
 ### Week 5 重点：监控系统（进阶）
 - Spring Boot Actuator
 - Metrics 收集
+- Grafana Dashboard
+
+### Week 6 重点：扩展功能（可选）
+- 数据库迁移（H2 → PostgreSQL）
+- 生产环境配置
+- 数据持久化
+
+### Week 7 重点：测试与 API 文档（可选）
+- 单元测试和集成测试
+- Swagger/OpenAPI 文档
+- Redis 缓存优化
+
+### Week 8 重点：部署与优化（可选）
+- Docker 容器化
+- CI/CD 流程
+- 性能测试与优化
 - Prometheus + Grafana
 - 数据可视化
 

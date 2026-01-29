@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <!-- Console Appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%d{HH:mm:ss}] %-5level %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Loki Appender -->
+    <springProperty name="loki.url" source="loki.url" defaultValue="http://localhost:3100/loki/api/v1/push"/>
+    <springProperty name="loki.enabled" source="loki.enabled" defaultValue="true"/>
+    <springProperty name="loki.batch.maxItems" source="loki.batch.max-items" defaultValue="100"/>
+    <springProperty name="loki.batch.maxBytes" source="loki.batch.max-bytes" defaultValue="1048576"/>
+    <springProperty name="loki.batch.timeout" source="loki.batch.timeout" defaultValue="5s"/>
+    <springProperty name="app.name" source="spring.application.name" defaultValue="inventory-simulator"/>
+    
+    <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+        <http>
+            <url>${loki.url}</url>
+            <connectionTimeoutMs>10000</connectionTimeoutMs>
+            <requestTimeoutMs>10000</requestTimeoutMs>
+        </http>
+        <format>
+            <label>
+                <pattern>application=inventory-simulator,level=%level,logger=%logger</pattern>
+            </label>
+            <message>
+                <pattern>[%d{HH:mm:ss}] %msg</pattern>
+            </message>
+            <properties>
+                <include>mdc</include>
+            </properties>
+        </format>
+        <batch>
+            <maxItems>${loki.batch.maxItems}</maxItems>
+            <maxBytes>${loki.batch.maxBytes}</maxBytes>
+            <timeout>${loki.batch.timeout}</timeout>
+        </batch>
+    </appender>
+    
+    <!-- 使用 AsyncAppender 包裝 Loki appender，避免阻塞主線程 -->
+    <appender name="ASYNC_LOKI" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="LOKI"/>
+        <queueSize>512</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <neverBlock>true</neverBlock>
+        <includeCallerData>false</includeCallerData>
+    </appender>
+
+    <!-- Order Processing Logger - Enhanced logging for order processing -->
+    <logger name="com.inventory.service.OrderManager" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ASYNC_LOKI"/>
+    </logger>
+
+    <!-- Root Logger -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ASYNC_LOKI"/>
+    </root>
+
+    <!-- Spring Profile specific configurations -->
+    <springProfile name="!prod">
+        <logger name="com.inventory" level="DEBUG"/>
+    </springProfile>
+
+    <springProfile name="prod">
+        <logger name="com.inventory" level="INFO"/>
+        <logger name="org.springframework" level="WARN"/>
+        <logger name="org.hibernate" level="WARN"/>
+    </springProfile>
+</configuration>

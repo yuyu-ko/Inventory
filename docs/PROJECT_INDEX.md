@@ -26,7 +26,10 @@
   - 第一周必须完成的任务
   - 常见问题快速解决
 
-- **[WEEKLY_PLAN.md](WEEKLY_PLAN.md)** - **四周详细计划**
+- **[WEEKLY_PLAN.md](WEEKLY_PLAN.md)** - **详细学习计划**
+  - Week 1-4: 基础项目实现
+  - Week 5: 监控系统（进阶）
+  - Week 6: 数据库迁移到 PostgreSQL（扩展功能）
   - 每日任务清单
   - 学习目标
   - 交付物清单

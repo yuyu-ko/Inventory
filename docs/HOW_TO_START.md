@@ -89,6 +89,11 @@
 
 按照 [WEEKLY_PLAN.md](WEEKLY_PLAN.md) 的每日计划逐步实现
 
+### Week 5-6: 进阶和扩展功能（可选）
+
+- **Week 5**: 监控系统集成（Prometheus + Grafana + Loki）
+- **Week 6**: 数据库迁移到 PostgreSQL（提升扩展性和生产就绪性）
+
 ## 💡 实现原则
 
 ### ✅ 应该做的

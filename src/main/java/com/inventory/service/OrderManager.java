@@ -44,6 +44,16 @@ public class OrderManager {
     public void handleOrderReceived(OrderReceivedMessage message) {
         meterRegistry.counter("orders_received_total").increment();
         Timer.Sample sample = Timer.start(meterRegistry);
+        String currentTime = simulationClock.formatTime(simulationClock.getCurrentTime());
+
+        // 記錄訂單接收日誌
+        log.info("ORDER_RECEIVED | orderId={} | orderType={} | customerId={} | itemsCount={} | placedTime={} | dueTime={}", 
+            message.getOrderId(), 
+            message.getOrderType(),
+            message.getCustomerId(),
+            message.getItems().size(),
+            message.getOrderPlacedTime(),
+            message.getOrderDueTime());
 
         try {
             // 1. 创建订单实体
@@ -72,15 +82,22 @@ public class OrderManager {
 
                 meterRegistry.counter("orders_processed_total", "status", "FAILED").increment();
                 
-                log.info("[{}] {} failed - insufficient inventory", 
-                    simulationClock.formatTime(simulationClock.getCurrentTime()), 
-                    order.getOrderId().toLowerCase());
+                // 記錄訂單失敗日誌（結構化格式）
+                String itemsDetail = order.getItems().stream()
+                    .map(item -> String.format("%s:%d", item.getSku(), item.getQuantity()))
+                    .collect(Collectors.joining(","));
+                log.warn("ORDER_FAILED | orderId={} | reason=INSUFFICIENT_INVENTORY | items=[{}] | time={}", 
+                    order.getOrderId().toLowerCase(), 
+                    itemsDetail,
+                    currentTime);
             }
 
         } catch (Exception e) {
-            log.error("[{}] Error processing order {}", 
-                simulationClock.formatTime(simulationClock.getCurrentTime()), 
-                message.getOrderId(), e);
+            log.error("ORDER_ERROR | orderId={} | error={} | time={}", 
+                message.getOrderId(), 
+                e.getMessage(),
+                currentTime, 
+                e);
             meterRegistry.counter("orders_processed_total", "status", "ERROR").increment();
         } finally {
             sample.stop(Timer.builder("orders_processing_time")
@@ -157,9 +174,14 @@ public class OrderManager {
      * 处理订单
      */
     private void processOrder(Order order) {
+        String currentTime = simulationClock.formatTime(simulationClock.getCurrentTime());
+        
         // 更新订单状态
         order.setStatus(Order.OrderStatus.PROCESSING);
         orderRepository.save(order);
+        
+        log.info("ORDER_PROCESSING | orderId={} | status=PROCESSING | time={}", 
+            order.getOrderId().toLowerCase(), currentTime);
 
         // 扣除库存
         for (OrderItem item : order.getItems()) {
@@ -171,6 +193,12 @@ public class OrderManager {
 
             String routingKey = topicPrefix + ".inventory.update";
             rabbitTemplate.convertAndSend(exchangeName, routingKey, updateMessage);
+            
+            log.debug("ORDER_INVENTORY_DEDUCT | orderId={} | sku={} | quantity={} | zone={}", 
+                order.getOrderId().toLowerCase(),
+                item.getSku(),
+                item.getQuantity(),
+                item.getTemperatureZone());
         }
 
         // 完成订单
@@ -185,10 +213,16 @@ public class OrderManager {
         processedMessage.setMessage("Order processed successfully");
         publishOrderProcessed(processedMessage);
 
-        // 输出格式化的日志
-        log.info("[{}] {} completed successfully", 
-            simulationClock.formatTime(simulationClock.getCurrentTime()), 
-            order.getOrderId().toLowerCase());
+        // 輸出結構化訂單處理完成日誌
+        String itemsDetail = order.getItems().stream()
+            .map(item -> String.format("%s:%d", item.getSku(), item.getQuantity()))
+            .collect(Collectors.joining(","));
+        log.info("ORDER_COMPLETED | orderId={} | orderType={} | customerId={} | items=[{}] | status=COMPLETED | time={}", 
+            order.getOrderId().toLowerCase(),
+            order.getOrderType(),
+            order.getCustomerId(),
+            itemsDetail,
+            currentTime);
     }
 
     /**
@@ -198,10 +232,16 @@ public class OrderManager {
         try {
             String routingKey = topicPrefix + ".order.processed";
             rabbitTemplate.convertAndSend(exchangeName, routingKey, message);
+            log.debug("ORDER_PROCESSED_PUBLISHED | orderId={} | status={} | routingKey={}", 
+                message.getOrderId(),
+                message.getStatus(),
+                routingKey);
         } catch (Exception e) {
-            log.error("[{}] Failed to publish order processed message for {}", 
+            log.error("ORDER_PROCESSED_PUBLISH_FAILED | orderId={} | error={} | time={}", 
+                message.getOrderId(), 
+                e.getMessage(),
                 simulationClock.formatTime(simulationClock.getCurrentTime()), 
-                message.getOrderId(), e);
+                e);
         }
     }
 
