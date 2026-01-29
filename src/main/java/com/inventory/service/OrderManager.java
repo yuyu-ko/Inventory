@@ -6,6 +6,8 @@ import com.inventory.message.OrderReceivedMessage;
 import com.inventory.model.Order;
 import com.inventory.model.OrderItem;
 import com.inventory.repository.OrderRepository;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -26,6 +28,7 @@ public class OrderManager {
     private final InventoryManager inventoryManager;
     private final RabbitTemplate rabbitTemplate;
     private final SimulationClock simulationClock;
+    private final MeterRegistry meterRegistry;
 
     @Value("${spring.rabbitmq.exchange.name:symbotic.simulation}")
     private String exchangeName;
@@ -39,6 +42,9 @@ public class OrderManager {
     @RabbitListener(queues = "${spring.rabbitmq.topic.prefix:sim}.order.received")
     @Transactional
     public void handleOrderReceived(OrderReceivedMessage message) {
+        meterRegistry.counter("orders_received_total").increment();
+        Timer.Sample sample = Timer.start(meterRegistry);
+
         try {
             // 1. 创建订单实体
             Order order = createOrderFromMessage(message);
@@ -51,6 +57,7 @@ public class OrderManager {
             if (inventoryAvailable) {
                 // 3. 处理订单
                 processOrder(order);
+                meterRegistry.counter("orders_processed_total", "status", "SUCCESS").increment();
             } else {
                 // 库存不足，标记为失败
                 order.setStatus(Order.OrderStatus.CANCELLED);
@@ -62,6 +69,8 @@ public class OrderManager {
                 processedMessage.setProcessedTime(simulationClock.getCurrentTime());
                 processedMessage.setMessage("Insufficient inventory");
                 publishOrderProcessed(processedMessage);
+
+                meterRegistry.counter("orders_processed_total", "status", "FAILED").increment();
                 
                 log.info("[{}] {} failed - insufficient inventory", 
                     simulationClock.formatTime(simulationClock.getCurrentTime()), 
@@ -72,6 +81,11 @@ public class OrderManager {
             log.error("[{}] Error processing order {}", 
                 simulationClock.formatTime(simulationClock.getCurrentTime()), 
                 message.getOrderId(), e);
+            meterRegistry.counter("orders_processed_total", "status", "ERROR").increment();
+        } finally {
+            sample.stop(Timer.builder("orders_processing_time")
+                    .description("Time taken to process an order end-to-end")
+                    .register(meterRegistry));
         }
     }
 

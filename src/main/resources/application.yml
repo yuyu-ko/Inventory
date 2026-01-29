@@ -93,3 +93,15 @@ logging:
     org.springframework.web: INFO
   pattern:
     console: "[%d{yyyy-MM-dd HH:mm:ss}] %msg%n"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,prometheus"
+  endpoint:
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}

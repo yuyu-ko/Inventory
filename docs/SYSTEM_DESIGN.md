@@ -137,7 +137,45 @@
 - 成功：`[HH:mm:ss] ord-000001 completed successfully`
 - 失败：`[HH:mm:ss] ord-000001 failed - insufficient inventory`
 
-### 6. Inventory Manager (库存管理器)
+### 6. Monitoring System (监控系统)
+
+**职责：**
+- 收集应用指标（订单处理数量、成功率、处理时间等）
+- 提供可视化 Dashboard
+- 实时监控系统运行状况
+
+**组件：**
+
+1. **Spring Boot Actuator**
+   - 暴露 `/actuator/prometheus` endpoint
+   - 提供应用健康状态、指标数据
+
+2. **Prometheus**
+   - 定期抓取应用指标（scrape interval: 5s）
+   - 存储时间序列数据
+   - 提供 PromQL 查询接口
+
+3. **Grafana**
+   - 连接 Prometheus 数据源
+   - 创建可视化 Dashboard
+   - 监控关键指标：
+     - 订单接收总数 (`orders_received_total`)
+     - 订单处理总数（按状态：SUCCESS/FAILED/ERROR）
+     - 订单处理成功率
+     - 平均订单处理时间
+
+**关键 Metrics：**
+- `orders_received_total`: Counter，订单接收总数
+- `orders_processed_total{status="SUCCESS|FAILED|ERROR"}`: Counter，按状态分类的订单处理总数
+- `orders_processing_time_seconds`: Timer，订单处理时间（包含 count、sum、max）
+
+**配置：**
+- Prometheus 配置文件: `monitoring/prometheus.yml`
+- Grafana 默认账号: admin/admin
+- Prometheus 端口: 9090
+- Grafana 端口: 3000
+
+### 7. Inventory Manager (库存管理器)
 
 **职责：**
 - 管理库存数据
@@ -294,6 +332,9 @@
 - **数据库**: H2 (内存数据库)
 - **ORM**: Spring Data JPA
 - **CSV 处理**: OpenCSV
+- **监控**: Spring Boot Actuator + Micrometer Prometheus
+- **指标收集**: Prometheus
+- **可视化**: Grafana
 - **构建工具**: Maven
 - **Java版本**: 17
 
@@ -381,6 +422,12 @@ ORD-000001,PICKUP,2024-01-13T08:00:00,2024-01-13T12:00:00,CUST-001,SKU-003,1,CHI
    - Username: guest
    - Password: guest
 
+8. **访问监控系统**
+   - Prometheus UI: http://localhost:9090
+   - Grafana Dashboard: http://localhost:3000
+   - 默认账号: admin/admin
+   - 在 Grafana 中添加 Prometheus 数据源（URL: `http://prometheus:9090`）
+
 ## 系统特点
 
 1. **模拟时钟系统**: 使用 SimulationClock 管理模拟时间，支持时间范围配置和加速运行
@@ -391,6 +438,7 @@ ORD-000001,PICKUP,2024-01-13T08:00:00,2024-01-13T12:00:00,CUST-001,SKU-003,1,CHI
 6. **事务支持**: 使用 Spring 事务管理确保数据一致性
 7. **优化的日志**: 简洁的日志格式，减少噪音
 8. **可扩展性**: 易于添加新的消息处理者和业务逻辑
+9. **监控与可视化**: 集成 Prometheus + Grafana，实时监控订单处理指标、成功率、处理时间等
 
 ## 扩展建议
 

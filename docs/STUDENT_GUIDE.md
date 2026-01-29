@@ -45,6 +45,9 @@
 - **数据库**: H2 (内存数据库，易于开发)
 - **ORM**: Spring Data JPA
 - **CSV 处理**: OpenCSV
+- **监控**: Spring Boot Actuator + Micrometer Prometheus
+- **指标收集**: Prometheus
+- **可视化**: Grafana
 - **构建工具**: Maven
 - **语言**: Java 17
 
@@ -76,7 +79,9 @@
 5. ✅ 处理 CSV 文件数据
 6. ✅ 实现时间模拟系统
 7. ✅ 开发 REST API 接口
-8. ✅ 编写清晰的项目文档
+8. ✅ 集成监控系统（Prometheus + Grafana）
+9. ✅ 实现自定义业务指标
+10. ✅ 编写清晰的项目文档
 
 ---
 
@@ -256,6 +261,8 @@ ORD-000001,PICKUP,2024-01-13T08:00:00,2024-01-13T12:00:00,CUST-001,SKU-001,2,AMB
 
 **目标**：完善功能，优化代码，编写文档
 
+**注意**：Week 4 是基础项目的完成，Week 5 是进阶监控功能（可选）
+
 #### Day 22-24: REST API 实现
 - [ ] 创建 `OrderController`
   - [ ] `GET /api/orders` - 获取所有订单
@@ -313,6 +320,57 @@ ORD-000001,PICKUP,2024-01-13T08:00:00,2024-01-13T12:00:00,CUST-001,SKU-001,2,AMB
 
 ---
 
+### 第五周：监控与可视化（Week 5 - 进阶）
+
+**目标**：集成监控系统，实现指标收集和可视化
+
+**注意**：这是进阶内容，如果时间紧张可以跳过，但会大大提升项目的专业度
+
+#### Day 29-31: Spring Boot Actuator 集成
+- [ ] 添加 Actuator 和 Micrometer Prometheus 依赖
+- [ ] 配置 Actuator endpoints
+- [ ] 验证 `/actuator/prometheus` 端点可用
+
+#### Day 32-33: 自定义 Metrics
+- [ ] 在 OrderManager 中添加 Metrics 记录
+- [ ] 实现订单接收、处理、成功/失败的计数
+- [ ] 实现订单处理时间的记录
+- [ ] 测试 Metrics 数据准确性
+
+#### Day 34-35: Prometheus + Grafana 部署
+- [ ] 配置 Prometheus（创建 `prometheus.yml`）
+- [ ] 更新 `docker-compose.yml` 添加监控服务
+- [ ] 启动 Prometheus 和 Grafana
+- [ ] 在 Grafana 中配置 Prometheus 数据源
+
+#### Day 36-37: Grafana Dashboard 创建
+- [ ] 创建订单处理 Dashboard
+- [ ] 添加关键指标可视化：
+  - 订单接收总数
+  - 订单成功/失败数
+  - 订单成功率
+  - 平均处理时间
+- [ ] 学习 PromQL 查询语言
+
+#### Day 38: 监控系统测试与文档
+- [ ] 端到端测试监控系统
+- [ ] 更新文档（监控部分）
+- [ ] 项目最终总结
+
+**学习资源**：
+- Spring Boot Actuator: https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html
+- Micrometer: https://micrometer.io/docs
+- Prometheus: https://prometheus.io/docs/
+- Grafana: https://grafana.com/docs/
+
+**验收标准**：
+- ✅ Prometheus 能够收集指标
+- ✅ Grafana Dashboard 能够显示数据
+- ✅ 关键业务指标可视化
+- ✅ 监控文档完整
+
+---
+
 ## 📖 每周学习重点
 
 ### Week 1 重点：基础架构
@@ -334,6 +392,12 @@ ORD-000001,PICKUP,2024-01-13T08:00:00,2024-01-13T12:00:00,CUST-001,SKU-001,2,AMB
 - REST API 设计
 - 日志管理
 - 项目文档
+
+### Week 5 重点：监控系统（进阶）
+- Spring Boot Actuator
+- Metrics 收集
+- Prometheus + Grafana
+- 数据可视化
 
 ---
 
@@ -375,6 +439,7 @@ ORD-000001,PICKUP,2024-01-13T08:00:00,2024-01-13T12:00:00,CUST-001,SKU-001,2,AMB
 - [ ] 库存管理功能正常（预留、扣除、补货）
 - [ ] REST API 功能正常
 - [ ] 系统能够稳定运行
+- [ ] （进阶）监控系统集成完成
 
 ### 代码质量（20%）
 - [ ] 代码结构清晰

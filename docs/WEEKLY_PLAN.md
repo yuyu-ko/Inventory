@@ -461,6 +461,239 @@ if (!order.getOrderPlacedTime().isAfter(simulationClock.getCurrentTime())) {
 
 ---
 
+## 📅 Week 5: 监控与可视化（进阶）
+
+### Day 29-31: Spring Boot Actuator 集成
+
+#### 任务清单
+- [ ] **添加 Actuator 依赖**
+  ```xml
+  <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+  </dependency>
+  <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-prometheus</artifactId>
+  </dependency>
+  ```
+
+- [ ] **配置 Actuator**
+  ```yaml
+  management:
+    endpoints:
+      web:
+        exposure:
+          include: "health,info,prometheus"
+    endpoint:
+      prometheus:
+        enabled: true
+    metrics:
+      tags:
+        application: ${spring.application.name}
+  ```
+
+- [ ] **验证 Metrics 端点**
+  - 访问 http://localhost:8080/actuator/prometheus
+  - 确认能够看到 metrics 输出
+
+#### 学习目标
+- 理解 Spring Boot Actuator 的作用
+- 掌握 Metrics 的暴露方式
+- 理解 Prometheus 格式的 metrics
+
+#### 交付物
+- ✅ Actuator 配置完成
+- ✅ Prometheus metrics 端点可用
+- ✅ 能够查看应用指标
+
+---
+
+### Day 32-33: 自定义 Metrics 实现
+
+#### 任务清单
+- [ ] **在 OrderManager 中添加 Metrics**
+  - 注入 `MeterRegistry`
+  - 记录订单接收总数 (`orders_received_total`)
+  - 记录订单处理总数（按状态：SUCCESS/FAILED/ERROR）
+  - 记录订单处理时间 (`orders_processing_time_seconds`)
+
+- [ ] **实现 Metrics 记录**
+  ```java
+  @Service
+  @RequiredArgsConstructor
+  public class OrderManager {
+      private final MeterRegistry meterRegistry;
+      
+      public void handleOrderReceived(...) {
+          meterRegistry.counter("orders_received_total").increment();
+          Timer.Sample sample = Timer.start(meterRegistry);
+          
+          try {
+              // 处理订单
+              meterRegistry.counter("orders_processed_total", 
+                  "status", "SUCCESS").increment();
+          } catch (Exception e) {
+              meterRegistry.counter("orders_processed_total", 
+                  "status", "ERROR").increment();
+          } finally {
+              sample.stop(Timer.builder("orders_processing_time")
+                  .register(meterRegistry));
+          }
+      }
+  }
+  ```
+
+- [ ] **测试 Metrics**
+  - 处理一些订单
+  - 查看 `/actuator/prometheus` 端点
+  - 确认 metrics 值正确更新
+
+#### 学习目标
+- 掌握 Micrometer 的使用
+- 理解 Counter、Timer 等 metric 类型
+- 学会自定义业务指标
+
+#### 交付物
+- ✅ 自定义 metrics 实现完成
+- ✅ Metrics 数据正确记录
+- ✅ 能够通过端点查看指标
+
+---
+
+### Day 34-35: Prometheus + Grafana 部署
+
+#### 任务清单
+- [ ] **配置 Prometheus**
+  - 创建 `monitoring/prometheus.yml` 配置文件
+  - 配置 scrape 目标（Spring Boot 应用）
+  - 设置 scrape interval
+
+- [ ] **更新 docker-compose.yml**
+  ```yaml
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: inventory-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+  
+  grafana:
+    image: grafana/grafana:latest
+    container_name: inventory-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+  ```
+
+- [ ] **启动监控服务**
+  ```bash
+  docker-compose up -d prometheus grafana
+  ```
+
+- [ ] **配置 Grafana**
+  - 访问 http://localhost:3000
+  - 添加 Prometheus 数据源（URL: `http://prometheus:9090`）
+  - 测试连接
+
+#### Prometheus 配置示例
+```yaml
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: 'inventory-simulator'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['host.docker.internal:8080']
+```
+
+#### 学习目标
+- 理解 Prometheus 的工作原理
+- 掌握 Prometheus 配置
+- 理解 Grafana 与 Prometheus 的集成
+
+#### 交付物
+- ✅ Prometheus 正常运行
+- ✅ Grafana 正常运行
+- ✅ 数据源配置完成
+
+---
+
+### Day 36-37: Grafana Dashboard 创建
+
+#### 任务清单
+- [ ] **创建订单处理 Dashboard**
+  - 订单接收总数（Stat Panel）
+  - 订单成功/失败数（Time Series）
+  - 订单成功率（Gauge）
+  - 平均订单处理时间（Time Series）
+
+- [ ] **常用 PromQL 查询**
+  ```promql
+  # 订单接收总数（时间范围内）
+  sum(increase(orders_received_total[$__range]))
+  
+  # 订单成功数
+  sum(increase(orders_processed_total{status="SUCCESS"}[$__range]))
+  
+  # 订单失败数
+  sum(increase(orders_processed_total{status="FAILED"}[$__range]))
+  
+  # 订单成功率（百分比）
+  sum(rate(orders_processed_total{status="SUCCESS"}[5m])) 
+  / sum(rate(orders_processed_total[5m])) * 100
+  
+  # 平均处理时间（秒）
+  sum(increase(orders_processing_time_seconds_sum[$__range])) 
+  / sum(increase(orders_processing_time_seconds_count[$__range]))
+  ```
+
+- [ ] **优化 Dashboard**
+  - 设置合适的刷新间隔
+  - 配置告警规则（可选）
+  - 美化图表样式
+
+#### 学习目标
+- 掌握 Grafana Dashboard 创建
+- 理解 PromQL 查询语言
+- 学会可视化指标数据
+
+#### 交付物
+- ✅ Dashboard 创建完成
+- ✅ 关键指标可视化
+- ✅ Dashboard 美观实用
+
+---
+
+### Day 38: 监控系统测试与文档
+
+#### 任务清单
+- [ ] **端到端测试**
+  - 运行模拟系统
+  - 观察 Grafana Dashboard
+  - 验证指标准确性
+
+- [ ] **更新文档**
+  - 更新 README.md（监控部分）
+  - 更新架构图（加入监控组件）
+  - 编写监控使用指南
+
+- [ ] **项目总结**
+  - 总结监控系统的作用
+  - 记录遇到的问题和解决方案
+  - 准备最终演示
+
+#### 交付物
+- ✅ 监控系统完整运行
+- ✅ 文档更新完成
+- ✅ 项目可以完整演示
+
+---
+
 ## 📊 进度跟踪表
 
 ### Week 1
@@ -491,6 +724,15 @@ if (!order.getOrderPlacedTime().isAfter(simulationClock.getCurrentTime())) {
 | Day 25-26 | 优化测试 | ⬜ | |
 | Day 27-28 | 文档总结 | ⬜ | |
 
+### Week 5（进阶）
+| 日期 | 任务 | 状态 | 备注 |
+|------|------|------|------|
+| Day 29-31 | Actuator 集成 | ⬜ | |
+| Day 32-33 | 自定义 Metrics | ⬜ | |
+| Day 34-35 | Prometheus + Grafana | ⬜ | |
+| Day 36-37 | Dashboard 创建 | ⬜ | |
+| Day 38 | 测试与文档 | ⬜ | |
+
 ---
 
 ## 💡 每日检查清单
@@ -509,6 +751,7 @@ if (!order.getOrderPlacedTime().isAfter(simulationClock.getCurrentTime())) {
 - **Week 2 结束**：核心功能实现完成
 - **Week 3 结束**：完整功能实现完成
 - **Week 4 结束**：项目完成，可以演示
+- **Week 5 结束**（进阶）：监控系统完成，项目全面完善
 
 ---
 

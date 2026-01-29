@@ -34,6 +34,12 @@ graph TB
         API3[Health API]
     end
     
+    subgraph "监控系统"
+        ACT[Spring Boot Actuator<br/>/actuator/prometheus]
+        PROM[Prometheus<br/>Metrics Collector]
+        GRAF[Grafana<br/>Dashboard]
+    end
+    
     CSV -->|读取| OI
     SR -->|tick| SC
     SC -->|当前时间| OI
@@ -52,6 +58,10 @@ graph TB
     API2 --> IM
     API3 --> SC
     
+    OM -->|Metrics| ACT
+    ACT -->|Scrape| PROM
+    PROM -->|Query| GRAF
+    
     style SC fill:#e1f5ff
     style SR fill:#e1f5ff
     style OI fill:#fff4e1
@@ -59,6 +69,9 @@ graph TB
     style IM fill:#e8f5e9
     style EX fill:#f3e5f5
     style CSV fill:#fce4ec
+    style ACT fill:#ff9800
+    style PROM fill:#ff9800
+    style GRAF fill:#ff5722
 ```
 
 ## 消息流程图
@@ -328,10 +341,15 @@ classDiagram
 ```mermaid
 graph TB
     subgraph "开发环境"
-        APP[Spring Boot Application<br/>Port: 8080]
+        APP[Spring Boot Application<br/>Port: 8080<br/>Actuator: /actuator/prometheus]
         RABBIT[RabbitMQ<br/>Port: 5672, 15672]
         H2[H2 Database<br/>In-Memory]
         CSV[CSV File<br/>resources/data/]
+        
+        subgraph "监控系统"
+            PROM[Prometheus<br/>Port: 9090]
+            GRAF[Grafana<br/>Port: 3000]
+        end
     end
     
     subgraph "生产环境建议"
@@ -346,6 +364,8 @@ graph TB
     CSV --> APP
     APP --> RABBIT
     APP --> H2
+    APP -->|Metrics| PROM
+    PROM -->|Query| GRAF
     
     APP2 --> RABBIT2
     APP2 --> DB
@@ -360,6 +380,8 @@ graph TB
     style RABBIT fill:#f3e5f5
     style RABBIT2 fill:#f3e5f5
     style CSV fill:#fce4ec
+    style PROM fill:#ff9800
+    style GRAF fill:#ff5722
 ```
 
 ## 时间线图

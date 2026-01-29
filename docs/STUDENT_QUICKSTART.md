@@ -54,6 +54,20 @@ mvn spring-boot:run
 3. **查看订单**：http://localhost:8080/api/orders
 4. **RabbitMQ 管理界面**：http://localhost:15672 (guest/guest)
 
+### 第六步：启动监控系统（可选，Week 5 内容）
+
+```bash
+# 启动 Prometheus + Grafana
+docker-compose up -d prometheus grafana
+```
+
+然后访问：
+- **Prometheus UI**: http://localhost:9090
+- **Grafana Dashboard**: http://localhost:3000 (admin/admin)
+- **Metrics 端点**: http://localhost:8080/actuator/prometheus
+
+在 Grafana 中配置 Prometheus 数据源（URL: `http://prometheus:9090`）
+
 ---
 
 ## 📚 学习路径
@@ -184,6 +198,23 @@ mvn spring-boot:run
    - 文档编写
    - 项目总结
 
+### 第五周：监控系统（进阶，可选）
+
+1. **Spring Boot Actuator**
+   - 添加依赖
+   - 配置 endpoints
+   - 暴露 metrics
+
+2. **自定义 Metrics**
+   - 记录订单处理指标
+   - 记录处理时间
+   - 记录成功/失败数
+
+3. **Prometheus + Grafana**
+   - 部署监控服务
+   - 配置数据源
+   - 创建 Dashboard
+
 ---
 
 ## 🎓 学习建议
@@ -222,6 +253,19 @@ mvn spring-boot:run
 - [ ] 数据库操作正常
 
 **如果这些都完成了，恭喜你！你可以开始第二周了！🎉**
+
+## ✅ 第五周检查清单（进阶）
+
+完成第五周后，你应该能够：
+
+- [ ] Spring Boot Actuator 配置完成
+- [ ] 自定义 Metrics 实现完成
+- [ ] Prometheus 正常运行并收集指标
+- [ ] Grafana Dashboard 创建完成
+- [ ] 能够可视化订单处理指标
+- [ ] 理解 PromQL 基本查询
+
+**如果这些都完成了，恭喜你！你的项目已经非常专业了！🚀**
 
 ---
 

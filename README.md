@@ -14,6 +14,7 @@
 - ✅ **Order Injector (订单注入器)**: 从 CSV 文件读取订单，根据模拟时间顺序注入
 - ✅ **Order Manager (订单处理器)**: 接收订单、检查库存、处理订单
 - ✅ **Inventory Manager (库存管理器)**: 管理库存、预留、扣除、自动补货
+- ✅ **监控与可视化**: 集成 Prometheus + Grafana，实时监控订单处理状况、成功率、处理时间等指标
 
 ## 技术栈
 
@@ -22,6 +23,9 @@
 - H2 Database (内存数据库)
 - Spring Data JPA
 - OpenCSV (CSV 文件读取)
+- Spring Boot Actuator (Metrics)
+- Prometheus (Metrics Collection)
+- Grafana (Monitoring Dashboard)
 - Maven
 - Java 17
 
@@ -77,6 +81,15 @@
    - 应用: http://localhost:8080
    - H2 控制台: http://localhost:8080/h2-console
    - RabbitMQ 管理界面: http://localhost:15672 (guest/guest)
+   - Prometheus Metrics: http://localhost:8080/actuator/prometheus
+   - Prometheus UI: http://localhost:9090
+   - Grafana Dashboard: http://localhost:3000 (admin/admin)
+
+7. **启动监控系统**（可选）
+   ```bash
+   docker-compose up -d prometheus grafana
+   ```
+   然后在 Grafana 中配置 Prometheus 数据源（URL: `http://prometheus:9090`）
 
 ## 故障排除
 
