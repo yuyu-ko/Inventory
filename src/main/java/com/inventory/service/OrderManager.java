@@ -37,7 +37,7 @@ public class OrderManager {
     private String topicPrefix;
 
     /**
-     * 监听订单接收消息
+     * Listen to order received messages
      */
     @RabbitListener(queues = "${spring.rabbitmq.topic.prefix:sim}.order.received")
     @Transactional
@@ -46,7 +46,7 @@ public class OrderManager {
         Timer.Sample sample = Timer.start(meterRegistry);
         String currentTime = simulationClock.formatTime(simulationClock.getCurrentTime());
 
-        // 記錄訂單接收日誌
+        // Log order received
         log.info("ORDER_RECEIVED | orderId={} | orderType={} | customerId={} | itemsCount={} | placedTime={} | dueTime={}", 
             message.getOrderId(), 
             message.getOrderType(),
@@ -56,20 +56,20 @@ public class OrderManager {
             message.getOrderDueTime());
 
         try {
-            // 1. 创建订单实体
+            // 1. Create order entity
             Order order = createOrderFromMessage(message);
             order.setStatus(Order.OrderStatus.RECEIVED);
             order = orderRepository.save(order);
 
-            // 2. 检查库存并预留
+            // 2. Check inventory and reserve
             boolean inventoryAvailable = checkAndReserveInventory(order, message.getItems());
 
             if (inventoryAvailable) {
-                // 3. 处理订单
+                // 3. Process order
                 processOrder(order);
                 meterRegistry.counter("orders_processed_total", "status", "SUCCESS").increment();
             } else {
-                // 库存不足，标记为失败
+                // Insufficient inventory, mark as failed
                 order.setStatus(Order.OrderStatus.CANCELLED);
                 orderRepository.save(order);
                 
@@ -82,7 +82,7 @@ public class OrderManager {
 
                 meterRegistry.counter("orders_processed_total", "status", "FAILED").increment();
                 
-                // 記錄訂單失敗日誌（結構化格式）
+                // Log order failure (structured format)
                 String itemsDetail = order.getItems().stream()
                     .map(item -> String.format("%s:%d", item.getSku(), item.getQuantity()))
                     .collect(Collectors.joining(","));
@@ -107,7 +107,7 @@ public class OrderManager {
     }
 
     /**
-     * 从消息创建订单实体
+     * Create order entity from message
      */
     private Order createOrderFromMessage(OrderReceivedMessage message) {
         Order order = new Order();
@@ -118,7 +118,7 @@ public class OrderManager {
         order.setCustomerId(message.getCustomerId());
         order.setStatus(Order.OrderStatus.PENDING);
 
-        // 转换订单项
+        // Convert order items
         List<OrderItem> items = message.getItems().stream()
             .map(item -> new OrderItem(
                 item.getSku(),
@@ -132,20 +132,20 @@ public class OrderManager {
     }
 
     /**
-     * 转换订单类型
+     * Convert order type
      */
     private Order.OrderType convertOrderType(Order.OrderType type) {
-        return type; // 已经是正确的类型
+        return type; // Already correct type
     }
 
     /**
-     * 检查并预留库存
+     * Check and reserve inventory
      */
     private boolean checkAndReserveInventory(Order order, List<OrderReceivedMessage.OrderItemDTO> items) {
         boolean allAvailable = true;
 
         for (OrderReceivedMessage.OrderItemDTO item : items) {
-            // 检查库存（如果不存在会自动创建）
+            // Check inventory (will auto-create if not exists)
             var inventoryItem = inventoryManager.getInventory(item.getSku());
             if (inventoryItem.getAvailableQuantity() < item.getQuantity()) {
                 log.warn("[{}] Insufficient inventory for SKU {} in order {}. Available: {}, Requested: {}", 
@@ -156,7 +156,7 @@ public class OrderManager {
                 break;
             }
 
-            // 发送预留库存消息
+            // Send reserve inventory message
             InventoryUpdateMessage updateMessage = new InventoryUpdateMessage();
             updateMessage.setSku(item.getSku());
             updateMessage.setReservedQuantityChange(item.getQuantity());
@@ -171,19 +171,19 @@ public class OrderManager {
     }
 
     /**
-     * 处理订单
+     * Process order
      */
     private void processOrder(Order order) {
         String currentTime = simulationClock.formatTime(simulationClock.getCurrentTime());
         
-        // 更新订单状态
+        // Update order status
         order.setStatus(Order.OrderStatus.PROCESSING);
         orderRepository.save(order);
         
         log.info("ORDER_PROCESSING | orderId={} | status=PROCESSING | time={}", 
             order.getOrderId().toLowerCase(), currentTime);
 
-        // 扣除库存
+        // Deduct inventory
         for (OrderItem item : order.getItems()) {
             InventoryUpdateMessage updateMessage = new InventoryUpdateMessage();
             updateMessage.setSku(item.getSku());
@@ -201,11 +201,11 @@ public class OrderManager {
                 item.getTemperatureZone());
         }
 
-        // 完成订单
+        // Complete order
         order.setStatus(Order.OrderStatus.COMPLETED);
         orderRepository.save(order);
 
-        // 发布订单处理完成消息
+        // Publish order processing completed message
         OrderProcessedMessage processedMessage = new OrderProcessedMessage();
         processedMessage.setOrderId(order.getOrderId());
         processedMessage.setStatus("COMPLETED");
@@ -213,7 +213,7 @@ public class OrderManager {
         processedMessage.setMessage("Order processed successfully");
         publishOrderProcessed(processedMessage);
 
-        // 輸出結構化訂單處理完成日誌
+        // Output structured order processing completed log
         String itemsDetail = order.getItems().stream()
             .map(item -> String.format("%s:%d", item.getSku(), item.getQuantity()))
             .collect(Collectors.joining(","));
@@ -226,7 +226,7 @@ public class OrderManager {
     }
 
     /**
-     * 发布订单处理消息
+     * Publish order processed message
      */
     private void publishOrderProcessed(OrderProcessedMessage message) {
         try {
@@ -246,14 +246,14 @@ public class OrderManager {
     }
 
     /**
-     * 查询订单
+     * Query order
      */
     public Order getOrder(String orderId) {
         return orderRepository.findByOrderId(orderId).orElse(null);
     }
 
     /**
-     * 获取所有订单
+     * Get all orders
      */
     public List<Order> getAllOrders() {
         return orderRepository.findAll();

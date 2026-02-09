@@ -1,45 +1,45 @@
-# 四周完成计划详细版
+# Detailed 8-Week Implementation Plan
 
-## 📅 Week 1: 环境搭建与基础架构
+## 📅 Week 1: Environment Setup and Foundation
 
-### Day 1-2: 项目准备
+### Day 1-2: Project Preparation
 
-#### 任务清单
-- [ ] **环境搭建**
-  - 安装 Java 17 JDK
-  - 安装 Maven（或使用 IDE 内置）
-  - 安装 IDE（推荐 IntelliJ IDEA）
-  - 安装 Docker Desktop
-  - 验证安装：`java -version`, `mvn -version`, `docker --version`
+#### Task Checklist
+- [ ] **Environment Setup**
+  - Install Java 17 JDK
+  - Install Maven (or use IDE built-in)
+  - Install IDE (recommended: IntelliJ IDEA)
+  - Install Docker Desktop
+  - Verify installation: `java -version`, `mvn -version`, `docker --version`
 
-- [ ] **项目初始化**
-  - 使用 Spring Initializr 创建项目（或从模板开始）
-  - 配置 `pom.xml` 添加依赖
-  - 创建基础包结构
-  - 运行应用，确认环境正常
+- [ ] **Project Initialization**
+  - Create project using Spring Initializr (or start from template)
+  - Configure `pom.xml` to add dependencies
+  - Create basic package structure
+  - Run application to confirm environment is working
 
-- [ ] **理解项目**
-  - 阅读 README.md
-  - 阅读 SYSTEM_DESIGN.md
-  - 理解系统架构图
-  - 明确项目目标
+- [ ] **Understand Project**
+  - Read README.md
+  - Read SYSTEM_DESIGN.md
+  - Understand system architecture diagrams
+  - Clarify project goals
 
-#### 学习目标
-- 掌握 Spring Boot 项目创建
-- 理解 Maven 依赖管理
-- 熟悉开发环境
+#### Learning Objectives
+- Master Spring Boot project creation
+- Understand Maven dependency management
+- Familiarize with development environment
 
-#### 交付物
-- ✅ 可以运行的 Spring Boot 项目
-- ✅ 配置文件完整
-- ✅ 理解项目需求
+#### Deliverables
+- ✅ Runnable Spring Boot project
+- ✅ Complete configuration files
+- ✅ Understand project requirements
 
 ---
 
-### Day 3-4: 数据模型设计
+### Day 3-4: Data Model Design
 
-#### 任务清单
-- [ ] **设计 Order 实体**
+#### Task Checklist
+- [ ] **Design Order Entity**
   ```java
   @Entity
   public class Order {
@@ -57,34 +57,34 @@
   }
   ```
 
-- [ ] **设计 OrderItem 实体**
-- [ ] **设计 InventoryItem 实体**
-- [ ] **创建 Repository 接口**
-- [ ] **配置数据库连接**
-- [ ] **测试数据库操作**
+- [ ] **Design OrderItem Entity**
+- [ ] **Design InventoryItem Entity**
+- [ ] **Create Repository Interfaces**
+- [ ] **Configure Database Connection**
+- [ ] **Test Database Operations**
 
-#### 学习目标
-- 掌握 JPA 实体设计
-- 理解实体关系映射
-- 掌握 Repository 使用
+#### Learning Objectives
+- Master JPA entity design
+- Understand entity relationship mapping
+- Master Repository usage
 
-#### 交付物
-- ✅ 完整的实体类定义
-- ✅ Repository 接口
-- ✅ 数据库表能够自动创建
-- ✅ 能够进行基本的 CRUD 操作
+#### Deliverables
+- ✅ Complete entity class definitions
+- ✅ Repository interfaces
+- ✅ Database tables can be created automatically
+- ✅ Can perform basic CRUD operations
 
 ---
 
-### Day 5-7: RabbitMQ 集成
+### Day 5-7: RabbitMQ Integration
 
-#### 任务清单
-- [ ] **安装 RabbitMQ**
+#### Task Checklist
+- [ ] **Install RabbitMQ**
   ```bash
   docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
   ```
 
-- [ ] **配置 RabbitMQ 连接**
+- [ ] **Configure RabbitMQ Connection**
   ```yaml
   spring:
     rabbitmq:
@@ -94,149 +94,149 @@
       password: guest
   ```
 
-- [ ] **创建配置类**
-  - Exchange（Topic Exchange）
-  - Queue（3个队列）
-  - Binding（绑定关系）
+- [ ] **Create Configuration Class**
+  - Exchange (Topic Exchange)
+  - Queue (3 queues)
+  - Binding (binding relationships)
 
-- [ ] **实现简单的消息发送/接收**
-  - 创建一个测试 Controller
-  - 发送消息
-  - 接收消息
-  - 验证消息传递
+- [ ] **Implement Simple Message Send/Receive**
+  - Create a test Controller
+  - Send messages
+  - Receive messages
+  - Verify message delivery
 
-#### 学习目标
-- 理解消息队列概念
-- 掌握 RabbitMQ 基本使用
-- 理解 Exchange、Queue、Binding
+#### Learning Objectives
+- Understand message queue concepts
+- Master RabbitMQ basic usage
+- Understand Exchange, Queue, Binding
 
-#### 交付物
-- ✅ RabbitMQ 正常运行
-- ✅ 能够发送和接收消息
-- ✅ 理解消息队列工作原理
+#### Deliverables
+- ✅ RabbitMQ running normally
+- ✅ Can send and receive messages
+- ✅ Understand message queue working principles
 
 ---
 
-## 📅 Week 2: 核心功能实现
+## 📅 Week 2: Core Functionality Implementation
 
-### Day 8-10: Order Manager 实现
+### Day 8-10: Order Manager Implementation
 
-#### 任务清单
-- [ ] **创建消息类**
+#### Task Checklist
+- [ ] **Create Message Classes**
   - `OrderReceivedMessage`
   - `OrderProcessedMessage`
   - `InventoryUpdateMessage`
 
-- [ ] **实现 OrderManager 服务**
-  - `handleOrderReceived()` - 接收订单
-  - `createOrderFromMessage()` - 创建订单实体
-  - `checkAndReserveInventory()` - 检查库存
-  - `processOrder()` - 处理订单
+- [ ] **Implement OrderManager Service**
+  - `handleOrderReceived()` - Receive orders
+  - `createOrderFromMessage()` - Create order entity
+  - `checkAndReserveInventory()` - Check inventory
+  - `processOrder()` - Process orders
 
-- [ ] **实现订单状态管理**
+- [ ] **Implement Order Status Management**
   - PENDING → RECEIVED → PROCESSING → COMPLETED
-  - 失败情况：CANCELLED
+  - Failure case: CANCELLED
 
-- [ ] **测试功能**
-  - 手动发送测试消息
-  - 验证订单创建
-  - 验证状态更新
+- [ ] **Test Functionality**
+  - Manually send test messages
+  - Verify order creation
+  - Verify status updates
 
-#### 关键代码提示
+#### Key Code Hints
 ```java
 @RabbitListener(queues = "sim.order.received")
 public void handleOrderReceived(OrderReceivedMessage message) {
-    // 1. 创建订单
+    // 1. Create order
     Order order = createOrderFromMessage(message);
     orderRepository.save(order);
     
-    // 2. 检查库存（TODO: 下一阶段实现）
-    // 3. 处理订单
+    // 2. Check inventory (TODO: implement in next phase)
+    // 3. Process order
 }
 ```
 
-#### 交付物
-- ✅ OrderManager 基本功能实现
-- ✅ 能够接收和处理订单消息
-- ✅ 订单数据正确保存
+#### Deliverables
+- ✅ OrderManager basic functionality implemented
+- ✅ Can receive and process order messages
+- ✅ Order data correctly saved
 
 ---
 
-### Day 11-13: Inventory Manager 实现
+### Day 11-13: Inventory Manager Implementation
 
-#### 任务清单
-- [ ] **实现 InventoryManager 服务**
-  - `handleInventoryUpdate()` - 处理库存更新消息
-  - `getOrCreateInventoryItem()` - 获取或创建库存项
-  - `reserveInventory()` - 预留库存
-  - `deductInventory()` - 扣除库存
-  - `replenishInventory()` - 补货
-  - `checkAndReplenish()` - 自动补货检查
+#### Task Checklist
+- [ ] **Implement InventoryManager Service**
+  - `handleInventoryUpdate()` - Handle inventory update messages
+  - `getOrCreateInventoryItem()` - Get or create inventory item
+  - `reserveInventory()` - Reserve inventory
+  - `deductInventory()` - Deduct inventory
+  - `replenishInventory()` - Replenish inventory
+  - `checkAndReplenish()` - Auto-replenishment check
 
-- [ ] **实现库存操作**
-  - RESERVE: 预留库存（订单确认时）
-  - DEDUCT: 扣除库存（订单完成时）
-  - REPLENISH: 补货（库存不足时）
+- [ ] **Implement Inventory Operations**
+  - RESERVE: Reserve inventory (when order confirmed)
+  - DEDUCT: Deduct inventory (when order completed)
+  - REPLENISH: Replenish (when inventory insufficient)
 
-- [ ] **集成测试**
-  - 测试预留功能
-  - 测试扣除功能
-  - 测试自动补货
+- [ ] **Integration Testing**
+  - Test reservation functionality
+  - Test deduction functionality
+  - Test auto-replenishment
 
-#### 关键逻辑
+#### Key Logic
 ```java
-// 预留库存
+// Reserve inventory
 if (availableQuantity >= requestedQuantity) {
     reservedQuantity += requestedQuantity;
-    // 保存
+    // Save
 }
 
-// 扣除库存
+// Deduct inventory
 quantity -= quantityToDeduct;
 reservedQuantity -= quantityFromReserved;
 
-// 自动补货
+// Auto-replenishment
 if (quantity <= lowStockThreshold) {
     quantity += replenishmentQuantity;
 }
 ```
 
-#### 交付物
-- ✅ InventoryManager 完整实现
-- ✅ 库存操作功能正常
-- ✅ 自动补货功能正常
+#### Deliverables
+- ✅ InventoryManager complete implementation
+- ✅ Inventory operations work correctly
+- ✅ Auto-replenishment works correctly
 
 ---
 
-### Day 14: 集成测试
+### Day 14: Integration Testing
 
-#### 任务清单
-- [ ] **完整流程测试**
-  1. Order Injector 发送订单（暂时手动发送测试）
-  2. Order Manager 接收订单
-  3. 库存预留
-  4. 订单处理
-  5. 库存扣除
-  6. 订单完成
+#### Task Checklist
+- [ ] **Complete Flow Testing**
+  1. Order Injector sends order (temporarily manual test)
+  2. Order Manager receives order
+  3. Inventory reservation
+  4. Order processing
+  5. Inventory deduction
+  6. Order completion
 
-- [ ] **问题修复**
-  - 修复发现的 Bug
-  - 优化代码逻辑
-  - 添加必要的日志
+- [ ] **Bug Fixes**
+  - Fix discovered bugs
+  - Optimize code logic
+  - Add necessary logs
 
-#### 交付物
-- ✅ 核心功能完整运行
-- ✅ 集成测试通过
-- ✅ 代码质量良好
+#### Deliverables
+- ✅ Core functionality runs completely
+- ✅ Integration tests pass
+- ✅ Code quality is good
 
 ---
 
-## 📅 Week 3: 订单注入与模拟时钟
+## 📅 Week 3: Order Injection and Simulation Clock
 
-### Day 15-17: CSV 订单读取
+### Day 15-17: CSV Order Reading
 
-#### 任务清单
-- [ ] **添加 OpenCSV 依赖**
+#### Task Checklist
+- [ ] **Add OpenCSV Dependency**
   ```xml
   <dependency>
       <groupId>com.opencsv</groupId>
@@ -245,7 +245,7 @@ if (quantity <= lowStockThreshold) {
   </dependency>
   ```
 
-- [ ] **创建 OrderCSVRecord 类**
+- [ ] **Create OrderCSVRecord Class**
   ```java
   @Data
   public class OrderCSVRecord {
@@ -253,37 +253,37 @@ if (quantity <= lowStockThreshold) {
       private String orderId;
       @CsvBindByName(column = "SKU")
       private String sku;
-      // ... 其他字段
+      // ... other fields
   }
   ```
 
-- [ ] **实现 OrderCSVReader**
-  - 读取 CSV 文件
-  - 解析为 OrderCSVRecord 列表
-  - 处理异常情况
+- [ ] **Implement OrderCSVReader**
+  - Read CSV file
+  - Parse into OrderCSVRecord list
+  - Handle exception cases
 
-- [ ] **准备测试 CSV 文件**
-  - 创建示例订单数据
-  - 验证 CSV 格式正确
+- [ ] **Prepare Test CSV File**
+  - Create sample order data
+  - Verify CSV format is correct
 
-#### CSV 格式示例
+#### CSV Format Example
 ```csv
 ORDER_ID,ORDER_TYPE,ORDER_PLACED_TIME,ORDER_DUE_TIME,CUSTOMER_ID,SKU,QUANTITY,TEMPERATURE_ZONE
 ORD-000001,PICKUP,2024-01-13T08:00:00,2024-01-13T12:00:00,CUST-001,SKU-001,2,AMBIENT
 ORD-000001,PICKUP,2024-01-13T08:00:00,2024-01-13T12:00:00,CUST-001,SKU-003,1,CHILLED
 ```
 
-#### 交付物
-- ✅ CSV 读取功能实现
-- ✅ 数据解析正确
-- ✅ 测试数据准备完成
+#### Deliverables
+- ✅ CSV reading functionality implemented
+- ✅ Data parsing is correct
+- ✅ Test data preparation completed
 
 ---
 
-### Day 18-19: SimulationClock 实现
+### Day 18-19: SimulationClock Implementation
 
-#### 任务清单
-- [ ] **创建 SimulationClock 类**
+#### Task Checklist
+- [ ] **Create SimulationClock Class**
   ```java
   @Component
   public class SimulationClock {
@@ -297,72 +297,72 @@ ORD-000001,PICKUP,2024-01-13T08:00:00,2024-01-13T12:00:00,CUST-001,SKU-003,1,CHI
   }
   ```
 
-- [ ] **配置参数**
+- [ ] **Configuration Parameters**
   - simStartTime
   - simEndTime
   - tickSeconds
   - speedFactor
 
-- [ ] **创建 SimulationRunner**
-  - 定时调用 tick()
-  - 控制模拟时间推进
+- [ ] **Create SimulationRunner**
+  - Periodically call tick()
+  - Control simulation time advancement
 
-- [ ] **测试功能**
-  - 时间初始化正确
-  - 时间推进正常
-  - 加速因子工作正常
+- [ ] **Test Functionality**
+  - Time initialization is correct
+  - Time advancement works normally
+  - Speed factor works correctly
 
-#### 交付物
-- ✅ SimulationClock 实现
-- ✅ 时间推进功能正常
-- ✅ 配置灵活
+#### Deliverables
+- ✅ SimulationClock implemented
+- ✅ Time advancement functionality works correctly
+- ✅ Configuration is flexible
 
 ---
 
-### Day 20-21: Order Injector 实现
+### Day 20-21: Order Injector Implementation
 
-#### 任务清单
-- [ ] **实现 OrderInjector**
-  - `initialize()` - 启动时加载 CSV
-  - `loadOrdersFromCSV()` - 加载订单
-  - `convertToOrderMessage()` - 转换订单格式
-  - `injectOrders()` - 定时注入订单
-  - `publishOrder()` - 发布订单消息
+#### Task Checklist
+- [ ] **Implement OrderInjector**
+  - `initialize()` - Load CSV on startup
+  - `loadOrdersFromCSV()` - Load orders
+  - `convertToOrderMessage()` - Convert order format
+  - `injectOrders()` - Periodically inject orders
+  - `publishOrder()` - Publish order message
 
-- [ ] **订单过滤逻辑**
-  - 仅加载模拟时间范围内的订单
-  - 根据当前模拟时间发送订单
+- [ ] **Order Filtering Logic**
+  - Only load orders within simulation time range
+  - Send orders based on current simulation time
 
-- [ ] **集成测试**
-  - 订单能够正确加载
-  - 订单能够按时间发送
-  - 日志输出清晰
+- [ ] **Integration Testing**
+  - Orders can be loaded correctly
+  - Orders can be sent by time
+  - Log output is clear
 
-#### 关键逻辑
+#### Key Logic
 ```java
-// 加载订单时过滤
+// Filter orders when loading
 orders.stream()
     .filter(order -> simulationClock.isTimeInRange(order.getOrderPlacedTime()))
     .collect(Collectors.toList());
 
-// 发送订单时检查
+// Check when sending orders
 if (!order.getOrderPlacedTime().isAfter(simulationClock.getCurrentTime())) {
     publishOrder(order);
 }
 ```
 
-#### 交付物
-- ✅ OrderInjector 完整实现
-- ✅ 订单注入功能正常
-- ✅ 与模拟时钟集成良好
+#### Deliverables
+- ✅ OrderInjector complete implementation
+- ✅ Order injection functionality works correctly
+- ✅ Good integration with simulation clock
 
 ---
 
-## 📅 Week 4: 完善与优化
+## 📅 Week 4: Refinement and Optimization
 
-### Day 22-24: REST API 实现
+### Day 22-24: REST API Implementation
 
-#### 任务清单
+#### Task Checklist
 - [ ] **OrderController**
   ```java
   @RestController
@@ -383,22 +383,22 @@ if (!order.getOrderPlacedTime().isAfter(simulationClock.getCurrentTime())) {
 - [ ] **HealthController**
   - GET /api/health
 
-- [ ] **API 测试**
-  - 使用 Postman 或 curl 测试
-  - 验证返回数据格式
-  - 测试错误处理
+- [ ] **API Testing**
+  - Test using Postman or curl
+  - Verify return data format
+  - Test error handling
 
-#### 交付物
-- ✅ 所有 API 端点实现
-- ✅ API 测试通过
-- ✅ 返回格式正确
+#### Deliverables
+- ✅ All API endpoints implemented
+- ✅ API tests pass
+- ✅ Return format is correct
 
 ---
 
-### Day 25-26: 日志优化与测试
+### Day 25-26: Log Optimization and Testing
 
-#### 任务清单
-- [ ] **优化日志配置**
+#### Task Checklist
+- [ ] **Optimize Log Configuration**
   ```yaml
   logging:
     level:
@@ -408,65 +408,65 @@ if (!order.getOrderPlacedTime().isAfter(simulationClock.getCurrentTime())) {
       console: "[%d{yyyy-MM-dd HH:mm:ss}] %msg%n"
   ```
 
-- [ ] **优化日志输出**
-  - 订单处理日志：`[HH:mm:ss] ord-000001 completed successfully`
-  - 减少不必要的日志
-  - 关键操作添加日志
+- [ ] **Optimize Log Output**
+  - Order processing logs: `[HH:mm:ss] ord-000001 completed successfully`
+  - Reduce unnecessary logs
+  - Add logs for key operations
 
-- [ ] **完整功能测试**
-  - 端到端测试
-  - 性能测试（可选）
-  - 边界情况测试
+- [ ] **Complete Functionality Testing**
+  - End-to-end testing
+  - Performance testing (optional)
+  - Edge case testing
 
-- [ ] **Bug 修复**
-  - 修复发现的问题
-  - 代码优化
-  - 代码审查
+- [ ] **Bug Fixes**
+  - Fix discovered issues
+  - Code optimization
+  - Code review
 
-#### 交付物
-- ✅ 日志输出清晰
-- ✅ 功能测试通过
-- ✅ 代码质量良好
+#### Deliverables
+- ✅ Log output is clear
+- ✅ Functionality tests pass
+- ✅ Code quality is good
 
 ---
 
-### Day 27-28: 文档编写与项目总结
+### Day 27-28: Documentation and Project Summary
 
-#### 任务清单
-- [ ] **更新文档**
+#### Task Checklist
+- [ ] **Update Documentation**
   - README.md
-  - 代码注释
-  - API 文档
+  - Code comments
+  - API documentation
 
-- [ ] **项目总结**
-  - 功能演示
-  - 遇到的问题和解决方案
-  - 学习收获
+- [ ] **Project Summary**
+  - Feature demonstration
+  - Problems encountered and solutions
+  - Learning outcomes
 
-- [ ] **代码整理**
-  - 代码格式统一
-  - 删除调试代码
-  - 最终代码审查
+- [ ] **Code Organization**
+  - Unified code formatting
+  - Remove debug code
+  - Final code review
 
-- [ ] **项目演示准备**
-  - 准备演示脚本
-  - 准备演示数据
-  - 准备 PPT（可选）
+- [ ] **Project Demo Preparation**
+  - Prepare demo script
+  - Prepare demo data
+  - Prepare PPT (optional)
 
-#### 交付物
-- ✅ 文档完整
-- ✅ 代码整理完成
-- ✅ 能够进行演示
-- ✅ 项目报告完成
+#### Deliverables
+- ✅ Documentation is complete
+- ✅ Code organization completed
+- ✅ Can perform demonstration
+- ✅ Project report completed
 
 ---
 
-## 📅 Week 5: 监控与可视化（进阶）
+## 📅 Week 5: Monitoring and Visualization (Advanced)
 
-### Day 29-31: Spring Boot Actuator 集成
+### Day 29-31: Spring Boot Actuator Integration
 
-#### 任务清单
-- [ ] **添加 Actuator 依赖**
+#### Task Checklist
+- [ ] **Add Actuator Dependencies**
   ```xml
   <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -478,7 +478,7 @@ if (!order.getOrderPlacedTime().isAfter(simulationClock.getCurrentTime())) {
   </dependency>
   ```
 
-- [ ] **配置 Actuator**
+- [ ] **Configure Actuator**
   ```yaml
   management:
     endpoints:
@@ -493,32 +493,32 @@ if (!order.getOrderPlacedTime().isAfter(simulationClock.getCurrentTime())) {
         application: ${spring.application.name}
   ```
 
-- [ ] **验证 Metrics 端点**
-  - 访问 http://localhost:8080/actuator/prometheus
-  - 确认能够看到 metrics 输出
+- [ ] **Verify Metrics Endpoint**
+  - Access http://localhost:8080/actuator/prometheus
+  - Confirm metrics output is visible
 
-#### 学习目标
-- 理解 Spring Boot Actuator 的作用
-- 掌握 Metrics 的暴露方式
-- 理解 Prometheus 格式的 metrics
+#### Learning Objectives
+- Understand Spring Boot Actuator's role
+- Master metrics exposure methods
+- Understand Prometheus format metrics
 
-#### 交付物
-- ✅ Actuator 配置完成
-- ✅ Prometheus metrics 端点可用
-- ✅ 能够查看应用指标
+#### Deliverables
+- ✅ Actuator configuration completed
+- ✅ Prometheus metrics endpoint available
+- ✅ Can view application metrics
 
 ---
 
-### Day 32-33: 自定义 Metrics 实现
+### Day 32-33: Custom Metrics Implementation
 
-#### 任务清单
-- [ ] **在 OrderManager 中添加 Metrics**
-  - 注入 `MeterRegistry`
-  - 记录订单接收总数 (`orders_received_total`)
-  - 记录订单处理总数（按状态：SUCCESS/FAILED/ERROR）
-  - 记录订单处理时间 (`orders_processing_time_seconds`)
+#### Task Checklist
+- [ ] **Add Metrics in OrderManager**
+  - Inject `MeterRegistry`
+  - Record total orders received (`orders_received_total`)
+  - Record total orders processed (by status: SUCCESS/FAILED/ERROR)
+  - Record order processing time (`orders_processing_time_seconds`)
 
-- [ ] **实现 Metrics 记录**
+- [ ] **Implement Metrics Recording**
   ```java
   @Service
   @RequiredArgsConstructor
@@ -530,7 +530,7 @@ if (!order.getOrderPlacedTime().isAfter(simulationClock.getCurrentTime())) {
           Timer.Sample sample = Timer.start(meterRegistry);
           
           try {
-              // 处理订单
+              // Process order
               meterRegistry.counter("orders_processed_total", 
                   "status", "SUCCESS").increment();
           } catch (Exception e) {
@@ -544,32 +544,32 @@ if (!order.getOrderPlacedTime().isAfter(simulationClock.getCurrentTime())) {
   }
   ```
 
-- [ ] **测试 Metrics**
-  - 处理一些订单
-  - 查看 `/actuator/prometheus` 端点
-  - 确认 metrics 值正确更新
+- [ ] **Test Metrics**
+  - Process some orders
+  - Check `/actuator/prometheus` endpoint
+  - Confirm metrics values update correctly
 
-#### 学习目标
-- 掌握 Micrometer 的使用
-- 理解 Counter、Timer 等 metric 类型
-- 学会自定义业务指标
+#### Learning Objectives
+- Master Micrometer usage
+- Understand Counter, Timer and other metric types
+- Learn to customize business metrics
 
-#### 交付物
-- ✅ 自定义 metrics 实现完成
-- ✅ Metrics 数据正确记录
-- ✅ 能够通过端点查看指标
+#### Deliverables
+- ✅ Custom metrics implementation completed
+- ✅ Metrics data recorded correctly
+- ✅ Can view metrics through endpoint
 
 ---
 
-### Day 34-35: Prometheus + Grafana 部署
+### Day 34-35: Prometheus + Grafana Deployment
 
-#### 任务清单
-- [ ] **配置 Prometheus**
-  - 创建 `monitoring/prometheus.yml` 配置文件
-  - 配置 scrape 目标（Spring Boot 应用）
-  - 设置 scrape interval
+#### Task Checklist
+- [ ] **Configure Prometheus**
+  - Create `monitoring/prometheus.yml` configuration file
+  - Configure scrape target (Spring Boot application)
+  - Set scrape interval
 
-- [ ] **更新 docker-compose.yml**
+- [ ] **Update docker-compose.yml**
   ```yaml
   prometheus:
     image: prom/prometheus:latest
@@ -589,17 +589,17 @@ if (!order.getOrderPlacedTime().isAfter(simulationClock.getCurrentTime())) {
       GF_SECURITY_ADMIN_PASSWORD: admin
   ```
 
-- [ ] **启动监控服务**
+- [ ] **Start Monitoring Services**
   ```bash
   docker-compose up -d prometheus grafana
   ```
 
-- [ ] **配置 Grafana**
-  - 访问 http://localhost:3000
-  - 添加 Prometheus 数据源（URL: `http://prometheus:9090`）
-  - 测试连接
+- [ ] **Configure Grafana**
+  - Access http://localhost:3000
+  - Add Prometheus data source (URL: `http://prometheus:9090`)
+  - Test connection
 
-#### Prometheus 配置示例
+#### Prometheus Configuration Example
 ```yaml
 global:
   scrape_interval: 5s
@@ -611,51 +611,51 @@ scrape_configs:
       - targets: ['host.docker.internal:8080']
 ```
 
-#### 学习目标
-- 理解 Prometheus 的工作原理
-- 掌握 Prometheus 配置
-- 理解 Grafana 与 Prometheus 的集成
+#### Learning Objectives
+- Understand Prometheus working principles
+- Master Prometheus configuration
+- Understand Grafana and Prometheus integration
 
-#### 交付物
-- ✅ Prometheus 正常运行
-- ✅ Grafana 正常运行
-- ✅ 数据源配置完成
+#### Deliverables
+- ✅ Prometheus running normally
+- ✅ Grafana running normally
+- ✅ Data source configuration completed
 
 ---
 
-### Day 36-37: Grafana Dashboard 创建
+### Day 36-37: Grafana Dashboard Creation
 
-#### 任务清单
-- [ ] **创建订单处理 Dashboard**
-  - 订单接收总数（Stat Panel）- 使用 PromQL 或 LogQL
-  - 订单成功/失败数（Time Series）- 使用 PromQL 或 LogQL
-  - 订单成功率（Gauge）- 使用 PromQL 或 LogQL
-  - 平均订单处理时间（Time Series）- 使用 PromQL
-  - 订单日志查看（Logs Panel）- 使用 LogQL
+#### Task Checklist
+- [ ] **Create Order Processing Dashboard**
+  - Total orders received (Stat Panel) - Use PromQL or LogQL
+  - Orders succeeded/failed (Time Series) - Use PromQL or LogQL
+  - Order success rate (Gauge) - Use PromQL or LogQL
+  - Average order processing time (Time Series) - Use PromQL
+  - Order log viewing (Logs Panel) - Use LogQL
 
-- [ ] **常用 PromQL 查询（Prometheus 指标）**
+- [ ] **Common PromQL Queries (Prometheus Metrics)**
   ```promql
-  # 订单接收总数（时间范围内）
+  # Total orders received (within time range)
   sum(increase(orders_received_total[$__range]))
   
-  # 订单成功数
+  # Orders succeeded
   sum(increase(orders_processed_total{status="SUCCESS"}[$__range]))
   
-  # 订单失败数
+  # Orders failed
   sum(increase(orders_processed_total{status="FAILED"}[$__range]))
   
-  # 订单成功率（百分比）
+  # Order success rate (percentage)
   sum(rate(orders_processed_total{status="SUCCESS"}[5m])) 
   / sum(rate(orders_processed_total[5m])) * 100
   
-  # 平均处理时间（秒）
+  # Average processing time (seconds)
   sum(increase(orders_processing_time_seconds_sum[$__range])) 
   / sum(increase(orders_processing_time_seconds_count[$__range]))
   ```
 
-- [ ] **常用 LogQL 查询（Loki 日志）**
+- [ ] **Common LogQL Queries (Loki Logs)**
   ```logql
-  # 成功订单数量（时间范围内）
+  # Successful orders count (within time range)
   sum(
     count_over_time(
       {application="inventory-simulator"} 
@@ -664,7 +664,7 @@ scrape_configs:
     )
   )
   
-  # 失败订单数量（时间范围内）
+  # Failed orders count (within time range)
   sum(
     count_over_time(
       {application="inventory-simulator"} 
@@ -673,7 +673,7 @@ scrape_configs:
     )
   )
   
-  # 总订单数量（成功+失败）
+  # Total orders count (successful + failed)
   sum(
     count_over_time(
       {application="inventory-simulator"} 
@@ -682,132 +682,132 @@ scrape_configs:
     )
   )
   
-  # 成功率百分比
+  # Success rate percentage
   (
     sum(count_over_time({application="inventory-simulator"} |= "ORDER_COMPLETED" [5m]))
     /
     sum(count_over_time({application="inventory-simulator"} |~ "ORDER_COMPLETED|ORDER_FAILED" [5m]))
   ) * 100
   
-  # 查看所有成功订单日志
+  # View all successful order logs
   {application="inventory-simulator"} |= "ORDER_COMPLETED"
   
-  # 查看所有失败订单日志
+  # View all failed order logs
   {application="inventory-simulator"} |= "ORDER_FAILED"
   ```
   
-  > 注意：时间范围 `[5m]` 会根据 Grafana 的时间选择器自动调整
+  > Note: Time range `[5m]` will automatically adjust based on Grafana's time selector
 
-- [ ] **优化 Dashboard**
-  - 设置合适的刷新间隔
-  - 配置告警规则（可选）
-  - 美化图表样式
+- [ ] **Optimize Dashboard**
+  - Set appropriate refresh interval
+  - Configure alert rules (optional)
+  - Beautify chart styles
 
-#### 学习目标
-- 掌握 Grafana Dashboard 创建
-- 理解 PromQL 查询语言
-- 学会可视化指标数据
+#### Learning Objectives
+- Master Grafana Dashboard creation
+- Understand PromQL query language
+- Learn to visualize metrics data
 
-#### 交付物
-- ✅ Dashboard 创建完成
-- ✅ 关键指标可视化
-- ✅ Dashboard 美观实用
-
----
-
-### Day 38: 监控系统测试与文档
-
-#### 任务清单
-- [ ] **端到端测试**
-  - 运行模拟系统
-  - 观察 Grafana Dashboard
-  - 验证指标准确性
-
-- [ ] **更新文档**
-  - 更新 README.md（监控部分）
-  - 更新架构图（加入监控组件）
-  - 编写监控使用指南
-
-- [ ] **项目总结**
-  - 总结监控系统的作用
-  - 记录遇到的问题和解决方案
-  - 准备最终演示
-
-#### 交付物
-- ✅ 监控系统完整运行
-- ✅ 文档更新完成
-- ✅ 项目可以完整演示
+#### Deliverables
+- ✅ Dashboard creation completed
+- ✅ Key metrics visualized
+- ✅ Dashboard is beautiful and practical
 
 ---
 
-## 📊 进度跟踪表
+### Day 38: Monitoring System Testing and Documentation
+
+#### Task Checklist
+- [ ] **End-to-End Testing**
+  - Run simulation system
+  - Observe Grafana Dashboard
+  - Verify metrics accuracy
+
+- [ ] **Update Documentation**
+  - Update README.md (monitoring section)
+  - Update architecture diagrams (add monitoring components)
+  - Write monitoring usage guide
+
+- [ ] **Project Summary**
+  - Summarize monitoring system's role
+  - Record problems encountered and solutions
+  - Prepare final demonstration
+
+#### Deliverables
+- ✅ Monitoring system runs completely
+- ✅ Documentation updated
+- ✅ Project can be fully demonstrated
+
+---
+
+## 📊 Progress Tracking Table
 
 ### Week 1
-| 日期 | 任务 | 状态 | 备注 |
-|------|------|------|------|
-| Day 1-2 | 环境搭建 | ⬜ | |
-| Day 3-4 | 数据模型 | ⬜ | |
+| Date | Task | Status | Notes |
+|------|------|--------|-------|
+| Day 1-2 | Environment Setup | ⬜ | |
+| Day 3-4 | Data Model | ⬜ | |
 | Day 5-7 | RabbitMQ | ⬜ | |
 
 ### Week 2
-| 日期 | 任务 | 状态 | 备注 |
-|------|------|------|------|
+| Date | Task | Status | Notes |
+|------|------|--------|-------|
 | Day 8-10 | Order Manager | ⬜ | |
 | Day 11-13 | Inventory Manager | ⬜ | |
-| Day 14 | 集成测试 | ⬜ | |
+| Day 14 | Integration Testing | ⬜ | |
 
 ### Week 3
-| 日期 | 任务 | 状态 | 备注 |
-|------|------|------|------|
-| Day 15-17 | CSV 读取 | ⬜ | |
+| Date | Task | Status | Notes |
+|------|------|--------|-------|
+| Day 15-17 | CSV Reading | ⬜ | |
 | Day 18-19 | SimulationClock | ⬜ | |
 | Day 20-21 | Order Injector | ⬜ | |
 
 ### Week 4
-| 日期 | 任务 | 状态 | 备注 |
-|------|------|------|------|
+| Date | Task | Status | Notes |
+|------|------|--------|-------|
 | Day 22-24 | REST API | ⬜ | |
-| Day 25-26 | 优化测试 | ⬜ | |
-| Day 27-28 | 文档总结 | ⬜ | |
+| Day 25-26 | Optimization & Testing | ⬜ | |
+| Day 27-28 | Documentation & Summary | ⬜ | |
 
-### Week 5（进阶）
-| 日期 | 任务 | 状态 | 备注 |
-|------|------|------|------|
-| Day 29-31 | Actuator 集成 | ⬜ | |
-| Day 32-33 | 自定义 Metrics | ⬜ | |
+### Week 5 (Advanced)
+| Date | Task | Status | Notes |
+|------|------|--------|-------|
+| Day 29-31 | Actuator Integration | ⬜ | |
+| Day 32-33 | Custom Metrics | ⬜ | |
 | Day 34-35 | Prometheus + Grafana | ⬜ | |
-| Day 36-37 | Dashboard 创建 | ⬜ | |
-| Day 38 | 测试与文档 | ⬜ | |
+| Day 36-37 | Dashboard Creation | ⬜ | |
+| Day 38 | Testing & Documentation | ⬜ | |
 
-### Week 6（扩展功能）
-| 日期 | 任务 | 状态 | 备注 |
-|------|------|------|------|
-| Day 39-40 | 数据库迁移到 PostgreSQL | ⬜ | 提升扩展性 |
-| Day 41-42 | 性能优化 | ⬜ | 可选 |
-| Day 43-44 | 安全增强 | ⬜ | 可选 |
+### Week 6 (Extension Features)
+| Date | Task | Status | Notes |
+|------|------|--------|-------|
+| Day 39-40 | Database Migration to PostgreSQL | ⬜ | Improve scalability |
+| Day 41-42 | Performance Optimization | ⬜ | Optional |
+| Day 43-44 | Security Enhancement | ⬜ | Optional |
 
-### Week 7（测试与API文档）
-| 日期 | 任务 | 状态 | 备注 |
-|------|------|------|------|
-| Day 45-46 | 单元测试与集成测试 | ⬜ | 提升代码质量 |
-| Day 47-48 | API 文档（Swagger/OpenAPI） | ⬜ | 提升API可用性 |
-| Day 49-50 | 缓存优化（Redis） | ⬜ | 可选 |
+### Week 7 (Testing & API Documentation)
+| Date | Task | Status | Notes |
+|------|------|--------|-------|
+| Day 45-46 | Unit Tests & Integration Tests | ⬜ | Improve code quality |
+| Day 47-48 | API Documentation (Swagger/OpenAPI) | ⬜ | Improve API usability |
+| Day 49-50 | Cache Optimization (Redis) | ⬜ | Optional |
 
-### Week 8（部署与优化）
-| 日期 | 任务 | 状态 | 备注 |
-|------|------|------|------|
-| Day 51-52 | Docker 容器化应用 | ⬜ | 提升部署能力 |
-| Day 53-54 | CI/CD 流程 | ⬜ | 可选 |
-| Day 55-56 | 性能测试与优化 | ⬜ | 可选 |
+### Week 8 (Deployment & Optimization)
+| Date | Task | Status | Notes |
+|------|------|--------|-------|
+| Day 51-52 | Docker Containerization | ⬜ | Improve deployment capability |
+| Day 53-54 | CI/CD Pipeline | ⬜ | Optional |
+| Day 55-56 | Performance Testing & Optimization | ⬜ | Optional |
 
 ---
 
-## 📅 Week 6: 扩展功能与优化（可选）
+## 📅 Week 6: Extension Features and Optimization (Optional)
 
-### Day 39-40: 数据库迁移到 PostgreSQL
+### Day 39-40: Database Migration to PostgreSQL
 
-#### 任务清单
-- [ ] **添加 PostgreSQL 依赖**
+#### Task Checklist
+- [ ] **Add PostgreSQL Dependency**
   ```xml
   <dependency>
       <groupId>org.postgresql</groupId>
@@ -816,7 +816,7 @@ scrape_configs:
   </dependency>
   ```
 
-- [ ] **配置 PostgreSQL 连接**
+- [ ] **Configure PostgreSQL Connection**
   ```yaml
   spring:
     datasource:
@@ -830,7 +830,7 @@ scrape_configs:
         ddl-auto: update
   ```
 
-- [ ] **在 docker-compose.yml 中添加 PostgreSQL**
+- [ ] **Add PostgreSQL to docker-compose.yml**
   ```yaml
   postgres:
     image: postgres:15-alpine
@@ -845,74 +845,74 @@ scrape_configs:
       - postgres_data:/var/lib/postgresql/data
   ```
 
-- [ ] **测试数据持久化**
-  - 重启应用，确认数据保留
-  - 验证表结构正确创建
-  - 测试数据查询性能
+- [ ] **Test Data Persistence**
+  - Restart application, confirm data retained
+  - Verify table structure created correctly
+  - Test data query performance
 
-#### 学习目标
-- 理解生产环境数据库选择
-- 掌握数据库迁移方法
-- 理解数据持久化的重要性
-- 学习 PostgreSQL 基本配置
+#### Learning Objectives
+- Understand production environment database selection
+- Master database migration methods
+- Understand importance of data persistence
+- Learn PostgreSQL basic configuration
 
-#### 优势说明
-- ✅ **数据持久化**：数据不会因应用重启而丢失
-- ✅ **扩展性**：支持更大数据量和并发
-- ✅ **生产就绪**：适合部署到生产环境
-- ✅ **性能优化**：支持索引、查询优化等高级功能
+#### Advantages
+- ✅ **Data Persistence**: Data won't be lost on application restart
+- ✅ **Scalability**: Supports larger data volumes and concurrency
+- ✅ **Production Ready**: Suitable for production deployment
+- ✅ **Performance Optimization**: Supports advanced features like indexes, query optimization
 
-#### 交付物
-- ✅ PostgreSQL 配置完成
-- ✅ 数据迁移成功
-- ✅ 数据持久化验证通过
-
----
-
-### Day 41-42: 性能优化（可选）
-
-#### 任务清单
-- [ ] **连接池优化**
-  - 配置 HikariCP 连接池参数
-  - 优化连接数配置
-
-- [ ] **查询优化**
-  - 添加数据库索引
-  - 优化 JPA 查询
-
-- [ ] **批量处理优化**
-  - 实现批量插入/更新
-  - 优化 CSV 数据加载
-
-#### 交付物
-- ✅ 性能优化完成
-- ✅ 性能测试通过
+#### Deliverables
+- ✅ PostgreSQL configuration completed
+- ✅ Data migration successful
+- ✅ Data persistence verification passed
 
 ---
 
-### Day 43-44: 安全增强（可选）
+### Day 41-42: Performance Optimization (Optional)
 
-#### 任务清单
-- [ ] **API 安全**
-  - 添加 API 认证
-  - 实现权限控制
+#### Task Checklist
+- [ ] **Connection Pool Optimization**
+  - Configure HikariCP connection pool parameters
+  - Optimize connection count configuration
 
-- [ ] **数据安全**
-  - 敏感数据加密
-  - SQL 注入防护
+- [ ] **Query Optimization**
+  - Add database indexes
+  - Optimize JPA queries
 
-#### 交付物
-- ✅ 安全功能实现
-- ✅ 安全测试通过
+- [ ] **Batch Processing Optimization**
+  - Implement batch insert/update
+  - Optimize CSV data loading
+
+#### Deliverables
+- ✅ Performance optimization completed
+- ✅ Performance tests pass
 
 ---
 
-## 📅 Week 7: 测试与 API 文档
+### Day 43-44: Security Enhancement (Optional)
 
-### Day 45-46: 单元测试与集成测试
+#### Task Checklist
+- [ ] **API Security**
+  - Add API authentication
+  - Implement access control
 
-#### 任务清单
-- [ ] **添加测试依赖**
+- [ ] **Data Security**
+  - Encrypt sensitive data
+  - SQL injection protection
+
+#### Deliverables
+- ✅ Security features implemented
+- ✅ Security tests pass
+
+---
+
+## 📅 Week 7: Testing and API Documentation
+
+### Day 45-46: Unit Tests and Integration Tests
+
+#### Task Checklist
+- [ ] **Add Test Dependencies**
   ```xml
   <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -926,38 +926,38 @@ scrape_configs:
   </dependency>
   ```
 
-- [ ] **编写单元测试**
-  - OrderManager 测试
-  - InventoryManager 测试
-  - Repository 测试
-  - Service 方法测试
+- [ ] **Write Unit Tests**
+  - OrderManager tests
+  - InventoryManager tests
+  - Repository tests
+  - Service method tests
 
-- [ ] **编写集成测试**
-  - 订单处理流程测试
-  - 库存管理流程测试
-  - 消息队列集成测试
+- [ ] **Write Integration Tests**
+  - Order processing flow tests
+  - Inventory management flow tests
+  - Message queue integration tests
 
-- [ ] **测试覆盖率**
-  - 目标：核心业务逻辑覆盖率 > 70%
-  - 使用 JaCoCo 生成覆盖率报告
+- [ ] **Test Coverage**
+  - Goal: Core business logic coverage > 70%
+  - Use JaCoCo to generate coverage report
 
-#### 学习目标
-- 掌握 Spring Boot 测试框架
-- 理解单元测试和集成测试的区别
-- 学会使用 Mockito 进行 Mock 测试
-- 理解测试驱动开发（TDD）
+#### Learning Objectives
+- Master Spring Boot testing framework
+- Understand difference between unit tests and integration tests
+- Learn to use Mockito for Mock testing
+- Understand Test-Driven Development (TDD)
 
-#### 交付物
-- ✅ 单元测试编写完成
-- ✅ 集成测试编写完成
-- ✅ 测试覆盖率报告
+#### Deliverables
+- ✅ Unit tests written
+- ✅ Integration tests written
+- ✅ Test coverage report
 
 ---
 
-### Day 47-48: API 文档（Swagger/OpenAPI）
+### Day 47-48: API Documentation (Swagger/OpenAPI)
 
-#### 任务清单
-- [ ] **添加 Swagger/OpenAPI 依赖**
+#### Task Checklist
+- [ ] **Add Swagger/OpenAPI Dependencies**
   ```xml
   <dependency>
       <groupId>org.springdoc</groupId>
@@ -966,7 +966,7 @@ scrape_configs:
   </dependency>
   ```
 
-- [ ] **配置 Swagger**
+- [ ] **Configure Swagger**
   ```yaml
   springdoc:
     api-docs:
@@ -975,33 +975,33 @@ scrape_configs:
       path: /swagger-ui.html
   ```
 
-- [ ] **添加 API 注解**
-  - `@Operation` - 描述 API 操作
-  - `@ApiResponse` - 描述响应
-  - `@Parameter` - 描述参数
-  - `@Schema` - 描述数据模型
+- [ ] **Add API Annotations**
+  - `@Operation` - Describe API operation
+  - `@ApiResponse` - Describe response
+  - `@Parameter` - Describe parameters
+  - `@Schema` - Describe data model
 
-- [ ] **测试 API 文档**
-  - 访问 http://localhost:8080/swagger-ui.html
-  - 验证所有 API 端点都有文档
-  - 测试 API 文档中的 Try it out 功能
+- [ ] **Test API Documentation**
+  - Access http://localhost:8080/swagger-ui.html
+  - Verify all API endpoints have documentation
+  - Test "Try it out" functionality in API documentation
 
-#### 学习目标
-- 理解 API 文档的重要性
-- 掌握 OpenAPI/Swagger 规范
-- 学会编写清晰的 API 文档
+#### Learning Objectives
+- Understand importance of API documentation
+- Master OpenAPI/Swagger specifications
+- Learn to write clear API documentation
 
-#### 交付物
-- ✅ Swagger UI 可访问
-- ✅ 所有 API 端点都有文档
-- ✅ API 文档清晰完整
+#### Deliverables
+- ✅ Swagger UI accessible
+- ✅ All API endpoints have documentation
+- ✅ API documentation is clear and complete
 
 ---
 
-### Day 49-50: 缓存优化（Redis - 可选）
+### Day 49-50: Cache Optimization (Redis - Optional)
 
-#### 任务清单
-- [ ] **添加 Redis 依赖**
+#### Task Checklist
+- [ ] **Add Redis Dependency**
   ```xml
   <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -1009,7 +1009,7 @@ scrape_configs:
   </dependency>
   ```
 
-- [ ] **在 docker-compose.yml 中添加 Redis**
+- [ ] **Add Redis to docker-compose.yml**
   ```yaml
   redis:
     image: redis:7-alpine
@@ -1017,7 +1017,7 @@ scrape_configs:
       - "6379:6379"
   ```
 
-- [ ] **配置 Redis 缓存**
+- [ ] **Configure Redis Cache**
   ```yaml
   spring:
     data:
@@ -1028,29 +1028,29 @@ scrape_configs:
       type: redis
   ```
 
-- [ ] **实现缓存**
-  - 库存查询缓存（`@Cacheable`）
-  - 订单查询缓存
-  - 缓存更新策略
+- [ ] **Implement Caching**
+  - Inventory query caching (`@Cacheable`)
+  - Order query caching
+  - Cache update strategy
 
-#### 学习目标
-- 理解缓存的作用和优势
-- 掌握 Spring Cache 抽象
-- 学会 Redis 基本使用
+#### Learning Objectives
+- Understand cache role and advantages
+- Master Spring Cache abstraction
+- Learn Redis basic usage
 
-#### 交付物
-- ✅ Redis 配置完成
-- ✅ 缓存功能实现
-- ✅ 性能提升验证
+#### Deliverables
+- ✅ Redis configuration completed
+- ✅ Cache functionality implemented
+- ✅ Performance improvement verified
 
 ---
 
-## 📅 Week 8: 部署与优化
+## 📅 Week 8: Deployment and Optimization
 
-### Day 51-52: Docker 容器化应用
+### Day 51-52: Docker Containerization
 
-#### 任务清单
-- [ ] **创建 Dockerfile**
+#### Task Checklist
+- [ ] **Create Dockerfile**
   ```dockerfile
   FROM openjdk:17-jdk-slim
   WORKDIR /app
@@ -1059,7 +1059,7 @@ scrape_configs:
   ENTRYPOINT ["java", "-jar", "app.jar"]
   ```
 
-- [ ] **创建 .dockerignore**
+- [ ] **Create .dockerignore**
   ```
   target/
   .git/
@@ -1067,39 +1067,39 @@ scrape_configs:
   *.iml
   ```
 
-- [ ] **构建 Docker 镜像**
+- [ ] **Build Docker Image**
   ```bash
   docker build -t inventory-simulator:latest .
   ```
 
-- [ ] **更新 docker-compose.yml**
-  - 添加应用服务
-  - 配置服务依赖
-  - 配置网络
+- [ ] **Update docker-compose.yml**
+  - Add application service
+  - Configure service dependencies
+  - Configure network
 
-- [ ] **测试容器化部署**
+- [ ] **Test Containerized Deployment**
   ```bash
   docker-compose up -d
   ```
 
-#### 学习目标
-- 理解容器化部署的优势
-- 掌握 Docker 基本使用
-- 学会编写 Dockerfile
-- 理解 Docker Compose 多容器编排
+#### Learning Objectives
+- Understand advantages of containerized deployment
+- Master Docker basic usage
+- Learn to write Dockerfile
+- Understand Docker Compose multi-container orchestration
 
-#### 交付物
-- ✅ Dockerfile 创建完成
-- ✅ Docker 镜像构建成功
-- ✅ docker-compose.yml 包含所有服务
-- ✅ 容器化部署测试通过
+#### Deliverables
+- ✅ Dockerfile created
+- ✅ Docker image built successfully
+- ✅ docker-compose.yml includes all services
+- ✅ Containerized deployment tests pass
 
 ---
 
-### Day 53-54: CI/CD 流程（可选）
+### Day 53-54: CI/CD Pipeline (Optional)
 
-#### 任务清单
-- [ ] **配置 GitHub Actions（或其他 CI/CD）**
+#### Task Checklist
+- [ ] **Configure GitHub Actions (or other CI/CD)**
   ```yaml
   name: CI/CD Pipeline
   on:
@@ -1120,121 +1120,121 @@ scrape_configs:
           run: mvn test
   ```
 
-- [ ] **自动化测试**
-  - 代码提交时自动运行测试
-  - 测试失败时阻止合并
+- [ ] **Automated Testing**
+  - Automatically run tests on code commit
+  - Block merge on test failure
 
-- [ ] **自动化构建**
-  - 构建 Docker 镜像
-  - 推送到镜像仓库（可选）
+- [ ] **Automated Build**
+  - Build Docker image
+  - Push to image registry (optional)
 
-#### 学习目标
-- 理解 CI/CD 的概念和作用
-- 掌握 GitHub Actions 基本使用
-- 学会自动化构建和测试流程
+#### Learning Objectives
+- Understand CI/CD concepts and role
+- Master GitHub Actions basic usage
+- Learn automated build and test processes
 
-#### 交付物
-- ✅ CI/CD 流程配置完成
-- ✅ 自动化测试运行正常
-- ✅ 自动化构建成功
-
----
-
-### Day 55-56: 性能测试与优化
-
-#### 任务清单
-- [ ] **性能测试**
-  - 使用 JMeter 或 Gatling 进行压力测试
-  - 测试订单处理吞吐量
-  - 测试并发处理能力
-
-- [ ] **性能分析**
-  - 识别性能瓶颈
-  - 分析数据库查询性能
-  - 分析消息队列处理性能
-
-- [ ] **性能优化**
-  - 数据库索引优化
-  - 查询优化
-  - 连接池优化
-  - 批量处理优化
-
-- [ ] **性能报告**
-  - 记录优化前后的性能对比
-  - 总结优化经验
-
-#### 学习目标
-- 理解性能测试的重要性
-- 掌握性能测试工具使用
-- 学会性能分析和优化方法
-
-#### 交付物
-- ✅ 性能测试完成
-- ✅ 性能优化实施
-- ✅ 性能报告文档
+#### Deliverables
+- ✅ CI/CD pipeline configured
+- ✅ Automated tests run normally
+- ✅ Automated build successful
 
 ---
 
-## 💡 每日检查清单
+### Day 55-56: Performance Testing and Optimization
 
-每天结束时，检查：
-- [ ] 今天的任务完成了吗？
-- [ ] 代码可以正常运行吗？
-- [ ] 遇到什么问题？解决了吗？
-- [ ] 明天要做什么？
+#### Task Checklist
+- [ ] **Performance Testing**
+  - Use JMeter or Gatling for stress testing
+  - Test order processing throughput
+  - Test concurrent processing capability
 
----
+- [ ] **Performance Analysis**
+  - Identify performance bottlenecks
+  - Analyze database query performance
+  - Analyze message queue processing performance
 
-## 🎯 里程碑
+- [ ] **Performance Optimization**
+  - Database index optimization
+  - Query optimization
+  - Connection pool optimization
+  - Batch processing optimization
 
-- **Week 1 结束**：基础架构搭建完成
-- **Week 2 结束**：核心功能实现完成
-- **Week 3 结束**：完整功能实现完成
-- **Week 4 结束**：项目完成，可以演示
-- **Week 5 结束**（进阶）：监控系统完成，项目全面完善
-- **Week 6 结束**（扩展）：数据库迁移完成，系统扩展性提升
-- **Week 7 结束**（扩展）：测试与 API 文档完成，代码质量提升
-- **Week 8 结束**（扩展）：部署与优化完成，项目生产就绪
+- [ ] **Performance Report**
+  - Record performance comparison before and after optimization
+  - Summarize optimization experience
 
----
+#### Learning Objectives
+- Understand importance of performance testing
+- Master performance testing tool usage
+- Learn performance analysis and optimization methods
 
-## 🔄 扩展功能说明
-
-### 为什么需要扩展功能？
-
-项目初始使用 **H2 内存数据库**，适合快速开发和测试：
-- ✅ 无需安装配置
-- ✅ 启动快速
-- ✅ 适合学习和原型开发
-
-但 H2 的限制：
-- ❌ 数据不持久化（应用重启数据丢失）
-- ❌ 不适合生产环境
-- ❌ 扩展性有限
-
-### Week 6: 迁移到 PostgreSQL
-
-**目标**：将系统从 H2 迁移到 PostgreSQL，提升系统扩展性和生产就绪性。
-
-**学习价值**：
-- 理解不同数据库的适用场景
-- 掌握数据库迁移方法
-- 学习生产环境数据库配置
-- 理解数据持久化的重要性
-
-**实施步骤**：
-1. 添加 PostgreSQL 依赖
-2. 配置数据库连接
-3. 在 docker-compose.yml 中添加 PostgreSQL 服务
-4. 更新 application.yml 配置
-5. 测试数据持久化
-
-**预期收益**：
-- ✅ 数据持久化，应用重启不丢失
-- ✅ 支持更大数据量和并发
-- ✅ 适合部署到生产环境
-- ✅ 学习生产级数据库使用
+#### Deliverables
+- ✅ Performance testing completed
+- ✅ Performance optimization implemented
+- ✅ Performance report documentation
 
 ---
 
-**记住**：计划是指导，可以根据实际情况调整。重要的是持续进步！
+## 💡 Daily Checklist
+
+At the end of each day, check:
+- [ ] Are today's tasks completed?
+- [ ] Can the code run normally?
+- [ ] What problems were encountered? Were they solved?
+- [ ] What needs to be done tomorrow?
+
+---
+
+## 🎯 Milestones
+
+- **End of Week 1**: Foundation setup completed
+- **End of Week 2**: Core functionality implementation completed
+- **End of Week 3**: Complete functionality implementation completed
+- **End of Week 4**: Project completed, can demonstrate
+- **End of Week 5** (Advanced): Monitoring system completed, project comprehensively refined
+- **End of Week 6** (Extension): Database migration completed, system scalability improved
+- **End of Week 7** (Extension): Testing and API documentation completed, code quality improved
+- **End of Week 8** (Extension): Deployment and optimization completed, project production-ready
+
+---
+
+## 🔄 Extension Features Description
+
+### Why Extension Features?
+
+The project initially uses **H2 in-memory database**, suitable for rapid development and testing:
+- ✅ No installation/configuration needed
+- ✅ Fast startup
+- ✅ Suitable for learning and prototyping
+
+But H2 limitations:
+- ❌ Data not persistent (data lost on application restart)
+- ❌ Not suitable for production environment
+- ❌ Limited scalability
+
+### Week 6: Migrate to PostgreSQL
+
+**Goal**: Migrate system from H2 to PostgreSQL to improve system scalability and production readiness.
+
+**Learning Value**:
+- Understand different database use cases
+- Master database migration methods
+- Learn production environment database configuration
+- Understand importance of data persistence
+
+**Implementation Steps**:
+1. Add PostgreSQL dependency
+2. Configure database connection
+3. Add PostgreSQL service to docker-compose.yml
+4. Update application.yml configuration
+5. Test data persistence
+
+**Expected Benefits**:
+- ✅ Data persistence, data not lost on restart
+- ✅ Supports larger data volumes and concurrency
+- ✅ Suitable for production deployment
+- ✅ Learn production-level database usage
+
+---
+
+**Remember**: The plan is a guide, can be adjusted based on actual situation. What's important is continuous progress!

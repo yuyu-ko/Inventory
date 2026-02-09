@@ -1,149 +1,149 @@
-# Git 提交指南
+# Git Commit Guide
 
-## 📋 文件提交分析
+## 📋 File Commit Analysis
 
-### ✅ **应该提交的文件（必须）**
+### ✅ **Files That Should Be Committed (Required)**
 
-#### 1. 项目配置文件
+#### 1. Project Configuration Files
 ```
-✅ pom.xml                    # Maven 配置文件
-✅ .gitignore                 # Git 忽略规则
-✅ docker-compose.yml         # Docker 配置
-✅ README.md                  # 项目说明
-```
-
-#### 2. 文档文件（docs/ 目录）
-```
-✅ docs/HOW_TO_START.md           # 如何开始
-✅ docs/STUDENT_GUIDE.md          # 学生项目指南
-✅ docs/IMPLEMENTATION_GUIDE.md   # 实现指南
-✅ docs/CODE_TEMPLATES.md         # 代码模板参考
-✅ docs/WEEKLY_PLAN.md            # 四周计划
-✅ docs/STUDENT_QUICKSTART.md     # 快速开始
-✅ docs/PROJECT_INDEX.md          # 文档索引
-✅ docs/SYSTEM_DESIGN.md          # 系统设计文档
-✅ docs/ARCHITECTURE_DIAGRAM.md   # 架构图
-✅ docs/CSV_ORDER_FORMAT.md       # CSV 格式说明
-✅ docs/INVENTORY_CSV_FORMAT.md   # 库存 CSV 格式
-✅ docs/GIT_COMMIT_GUIDE.md       # 本文件
-✅ SETUP.md                       # 环境设置
-✅ TROUBLESHOOTING.md             # 故障排除
+✅ pom.xml                    # Maven configuration file
+✅ .gitignore                 # Git ignore rules
+✅ docker-compose.yml         # Docker configuration
+✅ README.md                  # Project documentation
 ```
 
-#### 3. 配置文件（application.yml）
+#### 2. Documentation Files (docs/ directory)
 ```
-⚠️  application.yml             # 配置文件（见下面说明）
+✅ docs/HOW_TO_START.md           # How to start
+✅ docs/PROJECT_GUIDE.md          # Project guide
+✅ docs/IMPLEMENTATION_GUIDE.md   # Implementation guide
+✅ docs/CODE_TEMPLATES.md         # Code template reference
+✅ docs/WEEKLY_PLAN.md            # Weekly plan
+✅ docs/QUICKSTART.md             # Quick start
+✅ docs/PROJECT_INDEX.md          # Documentation index
+✅ docs/SYSTEM_DESIGN.md          # System design documentation
+✅ docs/ARCHITECTURE_DIAGRAM.md   # Architecture diagrams
+✅ docs/CSV_ORDER_FORMAT.md       # CSV format specification
+✅ docs/INVENTORY_CSV_FORMAT.md   # Inventory CSV format
+✅ docs/GIT_COMMIT_GUIDE.md       # This file
+✅ SETUP.md                       # Environment setup
+✅ TROUBLESHOOTING.md             # Troubleshooting
 ```
 
-#### 4. 示例数据文件
+#### 3. Configuration Files (application.yml)
 ```
-✅ src/main/resources/data/orders_sample.csv      # 订单示例数据
-✅ src/main/resources/data/inventory_sample.csv   # 库存示例数据
-```
-
-#### 5. 启动脚本
-```
-✅ start.sh           # Linux/Mac 启动脚本
-✅ start.bat          # Windows 启动脚本
+⚠️  application.yml             # Configuration file (see notes below)
 ```
 
----
-
-### ⚠️ **需要决定是否提交的文件**
-
-#### Java 源代码文件（src/main/java/）
-
-**选项 1：作为参考模板提交（推荐）**
-- ✅ 提交源代码，但添加说明：这些是**参考代码**，学生应该自己实现
-- 优点：学生可以参考，但不鼓励直接复制
-- 建议：在 README 或代码注释中明确说明
-
-**选项 2：不提交源代码**
-- ❌ 不提交 `src/main/java/` 目录
-- 优点：强制学生自己实现
-- 缺点：学生无法看到完整的实现参考
-
-**建议做法**：
+#### 4. Sample Data Files
 ```
-如果作为教学项目：
-- ✅ 提交代码，但添加明确的注释说明这是参考实现
-- ✅ 在 README 中强调学生需要自己实现
-- ✅ 在代码中添加 TODO 注释，引导学生思考
+✅ src/main/resources/data/orders_sample.csv      # Order sample data
+✅ src/main/resources/data/inventory_sample.csv   # Inventory sample data
+```
+
+#### 5. Startup Scripts
+```
+✅ start.sh           # Linux/Mac startup script
+✅ start.bat          # Windows startup script
 ```
 
 ---
 
-### ❌ **不应该提交的文件（已由 .gitignore 忽略）**
+### ⚠️ **Files That Need Decision on Whether to Commit**
 
-#### 编译产物
-```
-❌ target/              # Maven 编译输出目录
-❌ *.class              # 编译后的类文件
-❌ *.jar                # 打包后的 jar 文件
-❌ *.war                # 打包后的 war 文件
-```
+#### Java Source Code Files (src/main/java/)
 
-#### IDE 配置文件
-```
-❌ .idea/               # IntelliJ IDEA 配置
-❌ .vscode/             # VS Code 配置
-❌ *.iml                # IntelliJ 模块文件
-❌ .settings/           # Eclipse 配置
-❌ .project             # Eclipse 项目文件
-❌ .classpath           # Eclipse 类路径
-```
+**Option 1: Commit as Reference Template (Recommended)**
+- ✅ Commit source code, but add notes: These are **reference code**, implementation should be done independently
+- Pros: Can be used as reference, but direct copying is discouraged
+- Recommendation: Clearly state in README or code comments
 
-#### 系统文件
-```
-❌ .DS_Store            # macOS 系统文件
-❌ Thumbs.db            # Windows 缩略图
-❌ *.swp                # Vim 交换文件
-❌ *.swo                # Vim 交换文件
-❌ *~                   # 备份文件
-```
+**Option 2: Don't Commit Source Code**
+- ❌ Don't commit `src/main/java/` directory
+- Pros: Forces independent implementation
+- Cons: Cannot see complete implementation reference
 
-#### 日志文件
+**Recommended Approach**:
 ```
-❌ *.log                # 日志文件
-❌ logs/                # 日志目录
+If as a reference project:
+- ✅ Commit code, but add clear comments stating this is reference implementation
+- ✅ Emphasize in README that independent implementation is required
+- ✅ Add TODO comments in code to guide thinking
 ```
 
 ---
 
-## 🎯 针对学生项目的建议
+### ❌ **Files That Should NOT Be Committed (Already Ignored by .gitignore)**
 
-### 如果这是**学生需要自己实现**的项目
-
-#### 推荐做法：提供骨架代码
-
-创建一个 `starter/` 分支或单独的目录，只包含：
-
+#### Build Artifacts
 ```
-✅ 项目配置文件（pom.xml, application.yml）
-✅ 文档文件（所有 docs/）
-✅ 实体类定义（只有字段，没有实现）
-✅ Repository 接口（空接口）
-✅ Service 接口或抽象类（只有方法签名和 TODO 注释）
-✅ Controller 骨架（空方法）
-✅ 配置文件示例
+❌ target/              # Maven build output directory
+❌ *.class              # Compiled class files
+❌ *.jar                # Packaged jar files
+❌ *.war                # Packaged war files
 ```
 
-**主分支（main/master）可以包含完整实现作为参考**
+#### IDE Configuration Files
+```
+❌ .idea/               # IntelliJ IDEA configuration
+❌ .vscode/             # VS Code configuration
+❌ *.iml                # IntelliJ module files
+❌ .settings/           # Eclipse configuration
+❌ .project             # Eclipse project file
+❌ .classpath           # Eclipse classpath
+```
+
+#### System Files
+```
+❌ .DS_Store            # macOS system files
+❌ Thumbs.db            # Windows thumbnails
+❌ *.swp                # Vim swap files
+❌ *.swo                # Vim swap files
+❌ *~                   # Backup files
+```
+
+#### Log Files
+```
+❌ *.log                # Log files
+❌ logs/                # Log directory
+```
 
 ---
 
-## 📝 Git 提交清单
+## 🎯 Recommendations for Reference Projects
 
-### 第一次提交（初始化）
+### If This is a Project That Requires Independent Implementation
+
+#### Recommended Approach: Provide Skeleton Code
+
+Create a `starter/` branch or separate directory containing only:
+
+```
+✅ Project configuration files (pom.xml, application.yml)
+✅ Documentation files (all docs/)
+✅ Entity class definitions (fields only, no implementation)
+✅ Repository interfaces (empty interfaces)
+✅ Service interfaces or abstract classes (method signatures and TODO comments only)
+✅ Controller skeletons (empty methods)
+✅ Configuration file examples
+```
+
+**Main branch (main/master) can contain complete implementation as reference**
+
+---
+
+## 📝 Git Commit Checklist
+
+### First Commit (Initialization)
 
 ```bash
-# 1. 检查 .gitignore
+# 1. Check .gitignore
 git check-ignore target/
 
-# 2. 查看将要提交的文件
+# 2. View files to be committed
 git status
 
-# 3. 添加所有应该提交的文件
+# 3. Add all files that should be committed
 git add .gitignore
 git add README.md
 git add pom.xml
@@ -155,53 +155,53 @@ git add start.sh
 git add start.bat
 git add src/main/resources/
 
-# 4. 根据决定是否添加源代码
-# 选项 A：添加源代码（作为参考）
+# 4. Decide whether to add source code
+# Option A: Add source code (as reference)
 git add src/main/java/
 
-# 选项 B：不添加源代码
-# （跳过这一步）
+# Option B: Don't add source code
+# (Skip this step)
 
-# 5. 提交
+# 5. Commit
 git commit -m "Initial commit: Inventory Management Simulator
 
 - Add project documentation and guides
 - Add Maven configuration
 - Add Docker Compose setup
 - Add sample CSV data files
-- Add implementation guides for students"
+- Add implementation guides"
 ```
 
 ---
 
-## 🔍 检查命令
+## 🔍 Check Commands
 
-### 查看哪些文件会被提交
+### View Which Files Will Be Committed
 ```bash
 git status
 ```
 
-### 查看 .gitignore 是否生效
+### Check if .gitignore is Working
 ```bash
 git check-ignore -v target/
 git check-ignore -v *.class
 ```
 
-### 查看将要提交的文件列表
+### View List of Files to Be Committed
 ```bash
 git ls-files
 ```
 
-### 检查是否有大文件
+### Check for Large Files
 ```bash
 find . -type f -size +1M | grep -v target | grep -v .git
 ```
 
 ---
 
-## ⚙️ .gitignore 建议配置
+## ⚙️ Recommended .gitignore Configuration
 
-检查你的 `.gitignore` 应该包含：
+Check that your `.gitignore` should include:
 
 ```gitignore
 # Maven
@@ -266,75 +266,75 @@ application-*.yml
 
 ---
 
-## 🎓 针对学生的提交建议
+## 🎯 Commit Recommendations for Reference Projects
 
-### 主分支（main/master）- 完整实现参考
+### Main Branch (main/master) - Complete Implementation Reference
 ```
-✅ 所有文档
-✅ 完整的源代码（作为参考实现）
-✅ 配置文件
-✅ 示例数据
-```
-
-### starter 分支 - 骨架代码
-```
-✅ 所有文档
-✅ 配置文件
-✅ 示例数据
-❌ 源代码（或只有骨架代码）
+✅ All documentation
+✅ Complete source code (as reference implementation)
+✅ Configuration files
+✅ Sample data
 ```
 
-**学生可以从 starter 分支开始，完成后再合并到 main 分支**
+### starter Branch - Skeleton Code
+```
+✅ All documentation
+✅ Configuration files
+✅ Sample data
+❌ Source code (or skeleton code only)
+```
+
+**Developers can start from starter branch, then merge to main branch after completion**
 
 ---
 
-## ✅ 最终检查清单
+## ✅ Final Checklist
 
-提交前确认：
-- [ ] `.gitignore` 已配置正确
-- [ ] `target/` 目录不会被提交
-- [ ] 所有文档文件都已添加
-- [ ] 配置文件已添加
-- [ ] 示例数据文件已添加
-- [ ] 源代码是否提交已决定
-- [ ] README.md 已更新（说明这是学生项目）
-- [ ] 没有敏感信息（密码、密钥等）
-- [ ] 没有大文件（>10MB）
-- [ ] 提交信息清晰明确
+Before committing, confirm:
+- [ ] `.gitignore` is configured correctly
+- [ ] `target/` directory will not be committed
+- [ ] All documentation files have been added
+- [ ] Configuration files have been added
+- [ ] Sample data files have been added
+- [ ] Decision made on whether to commit source code
+- [ ] README.md has been updated
+- [ ] No sensitive information (passwords, keys, etc.)
+- [ ] No large files (>10MB)
+- [ ] Commit message is clear and descriptive
 
 ---
 
-## 🚀 快速提交命令
+## 🚀 Quick Commit Commands
 
 ```bash
-# 检查状态
+# Check status
 git status
 
-# 查看将要提交的文件
+# View files to be committed
 git add -n .
 
-# 添加所有文件（.gitignore 会自动排除）
+# Add all files (.gitignore will automatically exclude)
 git add .
 
-# 查看将要提交的内容
+# View what will be committed
 git status
 
-# 提交
+# Commit
 git commit -m "Add inventory management simulator project
 
-- Project documentation and student guides
+- Project documentation and guides
 - Maven and Docker configuration
 - Sample CSV data files
 - Implementation guides and templates"
 
-# 如果已配置远程仓库
+# If remote repository is configured
 git push origin main
 ```
 
 ---
 
-## 📚 相关资源
+## 📚 Related Resources
 
-- [Git 官方文档](https://git-scm.com/doc)
-- [GitHub .gitignore 模板](https://github.com/github/gitignore)
+- [Git Official Documentation](https://git-scm.com/doc)
+- [GitHub .gitignore Templates](https://github.com/github/gitignore)
 - [Maven .gitignore](https://github.com/github/gitignore/blob/main/Maven.gitignore)

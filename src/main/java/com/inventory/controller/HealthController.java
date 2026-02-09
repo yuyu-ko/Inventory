@@ -25,7 +25,7 @@ public class HealthController {
         status.put("status", "UP");
         status.put("application", "Inventory Simulator");
         
-        // 检查 RabbitMQ 连接
+        // Check RabbitMQ connection
         try {
             var connection = connectionFactory.createConnection();
             boolean rabbitmqConnected = connection.isOpen();

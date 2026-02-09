@@ -1,34 +1,34 @@
 #!/bin/bash
 
 echo "=========================================="
-echo "启动库存管理模拟器"
+echo "Starting Inventory Management Simulator"
 echo "=========================================="
 
-# 检查 Docker 是否运行
+# Check if Docker is running
 if ! docker info > /dev/null 2>&1; then
-    echo "错误: Docker 未运行，请先启动 Docker"
+    echo "Error: Docker is not running, please start Docker first"
     exit 1
 fi
 
-# 启动 RabbitMQ
-echo "1. 启动 RabbitMQ..."
+# Start RabbitMQ
+echo "1. Starting RabbitMQ..."
 docker-compose up -d rabbitmq
 
-# 等待 RabbitMQ 就绪
-echo "2. 等待 RabbitMQ 就绪..."
+# Wait for RabbitMQ to be ready
+echo "2. Waiting for RabbitMQ to be ready..."
 sleep 10
 
-# 检查 RabbitMQ 是否就绪
+# Check if RabbitMQ is ready
 until docker exec inventory-rabbitmq rabbitmq-diagnostics ping > /dev/null 2>&1; do
-    echo "   等待 RabbitMQ 启动..."
+    echo "   Waiting for RabbitMQ to start..."
     sleep 2
 done
 
-echo "3. RabbitMQ 已就绪！"
+echo "3. RabbitMQ is ready!"
 echo ""
 echo "=========================================="
-echo "启动 Spring Boot 应用..."
+echo "Starting Spring Boot application..."
 echo "=========================================="
 
-# 启动 Spring Boot 应用
+# Start Spring Boot application
 mvn spring-boot:run

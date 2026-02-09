@@ -1,40 +1,40 @@
-# CSV 订单文件格式说明
+# CSV Order File Format Specification
 
-## 文件位置
+## File Location
 
-CSV 文件应放在 `src/main/resources/data/` 目录下，默认文件名为 `orders_sample.csv`
+CSV files should be placed in the `src/main/resources/data/` directory, with the default filename `orders_sample.csv`
 
-可以通过 `application.yml` 配置更改：
+Can be configured via `application.yml`:
 ```yaml
 inventory:
   order-injector:
-    csv-file: data/orders_sample.csv  # 相对于 resources 目录
+    csv-file: data/orders_sample.csv  # Relative to resources directory
 ```
 
-## CSV 格式（长格式 - Long Format）
+## CSV Format (Long Format)
 
-采用**长格式（每行一个订单项）**，这样设计更灵活，可以支持任意数量的 SKU，无需修改代码。
+Uses **long format (one order item per line)**, which is more flexible and can support any number of SKUs without code modifications.
 
-### 必需列
+### Required Columns
 
-| 列名 | 类型 | 说明 | 示例 |
-|------|------|------|------|
-| ORDER_ID | String | 订单ID（同一订单的多行使用相同的 ORDER_ID） | ORD-000001 |
-| ORDER_TYPE | String | 订单类型：PICKUP 或 DELIVERY | PICKUP |
-| ORDER_PLACED_TIME | DateTime | 下单时间（ISO格式） | 2024-01-13T08:00:00 |
-| ORDER_DUE_TIME | DateTime | 到期时间（ISO格式） | 2024-01-13T12:00:00 |
-| CUSTOMER_ID | String | 客户ID | CUST-001 |
-| SKU | String | 商品SKU（可以是任意SKU，无需预先定义） | SKU-001 |
-| QUANTITY | Integer | 该SKU的数量 | 2 |
-| TEMPERATURE_ZONE | String | 温度区域（可选，默认为 AMBIENT） | AMBIENT |
+| Column Name | Type | Description | Example |
+|-------------|------|-------------|---------|
+| ORDER_ID | String | Order ID (multiple rows with the same ORDER_ID belong to the same order) | ORD-000001 |
+| ORDER_TYPE | String | Order type: PICKUP or DELIVERY | PICKUP |
+| ORDER_PLACED_TIME | DateTime | Order placed time (ISO format) | 2024-01-13T08:00:00 |
+| ORDER_DUE_TIME | DateTime | Order due time (ISO format) | 2024-01-13T12:00:00 |
+| CUSTOMER_ID | String | Customer ID | CUST-001 |
+| SKU | String | Product SKU (can be any SKU, no pre-definition required) | SKU-001 |
+| QUANTITY | Integer | Quantity of this SKU | 2 |
+| TEMPERATURE_ZONE | String | Temperature zone (optional, defaults to AMBIENT) | AMBIENT |
 
-### 格式说明
+### Format Description
 
-- **同一订单的多个商品使用多行表示**，每行一个 SKU
-- **ORDER_ID 相同的行会被合并为一个订单**
-- **支持任意数量的 SKU**，无需修改代码
+- **Multiple items in the same order are represented by multiple rows**, one SKU per line
+- **Rows with the same ORDER_ID are merged into one order**
+- **Supports any number of SKUs** without code modifications
 
-## CSV 示例
+## CSV Example
 
 ```csv
 ORDER_ID,ORDER_TYPE,ORDER_PLACED_TIME,ORDER_DUE_TIME,CUSTOMER_ID,SKU,QUANTITY,TEMPERATURE_ZONE
@@ -44,66 +44,66 @@ ORD-000002,DELIVERY,2024-01-13T08:15:00,2024-01-13T14:00:00,CUST-002,SKU-002,3,A
 ORD-000002,DELIVERY,2024-01-13T08:15:00,2024-01-13T14:00:00,CUST-002,SKU-004,2,CHILLED
 ```
 
-上面的示例中：
-- `ORD-000001` 包含 2 个商品：SKU-001 (2个) 和 SKU-003 (1个)
-- `ORD-000002` 包含 2 个商品：SKU-002 (3个) 和 SKU-004 (2个)
+In the example above:
+- `ORD-000001` contains 2 items: SKU-001 (2 units) and SKU-003 (1 unit)
+- `ORD-000002` contains 2 items: SKU-002 (3 units) and SKU-004 (2 units)
 
-## 优势
+## Advantages
 
-### ✅ 可扩展性强
-- **支持任意 SKU**：可以添加任何新的 SKU（SKU-999, SKU-ABC 等），无需修改代码
-- **支持任意数量的商品**：一个订单可以包含任意数量的商品
-- **无需预定义列**：不需要 SKU_001, SKU_002 等固定列
+### ✅ High Scalability
+- **Supports any SKU**: Can add any new SKU (SKU-999, SKU-ABC, etc.) without code modifications
+- **Supports any number of items**: An order can contain any number of items
+- **No pre-defined columns**: No need for fixed columns like SKU_001, SKU_002, etc.
 
-### ✅ 灵活性高
-- **每个商品可以有不同的温度区域**：同一订单中可以混合 AMBIENT、CHILLED、FROZEN
-- **易于维护**：添加新订单或新商品只需添加新行
+### ✅ High Flexibility
+- **Each item can have different temperature zones**: Can mix AMBIENT, CHILLED, FROZEN in the same order
+- **Easy to maintain**: Adding new orders or items only requires adding new rows
 
-### ✅ 符合数据库设计最佳实践
-- 类似于数据库的订单表和订单项表的格式
-- 符合关系型数据库的规范化设计
+### ✅ Follows Database Design Best Practices
+- Similar to database order table and order item table format
+- Follows relational database normalization design
 
-## 订单处理逻辑
+## Order Processing Logic
 
-1. **启动时加载**：应用启动时从 CSV 文件加载所有订单
-2. **按 ORDER_ID 分组**：将具有相同 ORDER_ID 的行合并为一个订单
-3. **按时间排序**：订单按 `ORDER_PLACED_TIME` 排序
-4. **定时发送**：每 5 秒检查一次，发送所有到期的订单（`ORDER_PLACED_TIME <= 当前时间`）
-5. **顺序处理**：订单按照 CSV 文件中的顺序和时间顺序发送
+1. **Load on startup**: Application loads all orders from CSV file on startup
+2. **Group by ORDER_ID**: Rows with the same ORDER_ID are merged into one order
+3. **Sort by time**: Orders are sorted by `ORDER_PLACED_TIME`
+4. **Timed sending**: Check every 5 seconds, send all due orders (`ORDER_PLACED_TIME <= current time`)
+5. **Sequential processing**: Orders are sent in the order they appear in the CSV file and by time
 
-## 配置选项
+## Configuration Options
 
-在 `application.yml` 中：
+In `application.yml`:
 
 ```yaml
 inventory:
   order-injector:
-    use-csv: true  # true = 从 CSV 读取
-    csv-file: data/orders_sample.csv  # CSV 文件路径
-    injection-interval-seconds: 5  # 检查间隔（秒）
+    use-csv: true  # true = read from CSV
+    csv-file: data/orders_sample.csv  # CSV file path
+    injection-interval-seconds: 5  # Check interval (seconds)
 ```
 
-## 注意事项
+## Notes
 
-1. **时间格式**：必须使用 ISO 8601 格式：`YYYY-MM-DDTHH:mm:ss`
-   - 正确：`2024-01-13T08:00:00`
-   - 错误：`2024-01-13 08:00:00`
+1. **Time format**: Must use ISO 8601 format: `YYYY-MM-DDTHH:mm:ss`
+   - Correct: `2024-01-13T08:00:00`
+   - Incorrect: `2024-01-13 08:00:00`
 
-2. **订单类型**：必须是 `PICKUP` 或 `DELIVERY`（大小写敏感）
+2. **Order type**: Must be `PICKUP` or `DELIVERY` (case-sensitive)
 
-3. **ORDER_ID 一致性**：同一订单的所有行必须具有相同的 ORDER_ID、ORDER_TYPE、ORDER_PLACED_TIME、ORDER_DUE_TIME 和 CUSTOMER_ID
+3. **ORDER_ID consistency**: All rows of the same order must have the same ORDER_ID, ORDER_TYPE, ORDER_PLACED_TIME, ORDER_DUE_TIME, and CUSTOMER_ID
 
-4. **温度区域**：
-   - 可选列，如果为空则默认为 `AMBIENT`
-   - 支持：`AMBIENT`、`CHILLED`、`FROZEN`
+4. **Temperature zone**:
+   - Optional column, defaults to `AMBIENT` if empty
+   - Supported: `AMBIENT`, `CHILLED`, `FROZEN`
 
-5. **文件编码**：CSV 文件应使用 UTF-8 编码
+5. **File encoding**: CSV files should use UTF-8 encoding
 
-6. **文件路径**：相对于 `src/main/resources/` 目录
+6. **File path**: Relative to `src/main/resources/` directory
 
-## 示例：添加新订单
+## Example: Adding New Orders
 
-要添加新订单，只需在 CSV 文件中添加新行：
+To add a new order, simply add new rows to the CSV file:
 
 ```csv
 ORDER_ID,ORDER_TYPE,ORDER_PLACED_TIME,ORDER_DUE_TIME,CUSTOMER_ID,SKU,QUANTITY,TEMPERATURE_ZONE
@@ -112,4 +112,4 @@ ORD-000011,PICKUP,2024-01-13T13:00:00,2024-01-13T17:00:00,CUST-011,SKU-888,3,CHI
 ORD-000011,PICKUP,2024-01-13T13:00:00,2024-01-13T17:00:00,CUST-011,SKU-777,2,FROZEN
 ```
 
-无需修改任何代码！
+No code modifications needed!

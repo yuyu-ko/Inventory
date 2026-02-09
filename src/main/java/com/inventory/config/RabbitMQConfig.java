@@ -86,7 +86,7 @@ public class RabbitMQConfig {
         RabbitTemplate template = new RabbitTemplate(connectionFactory);
         template.setMessageConverter(jsonMessageConverter());
         
-        // 添加连接监听器
+        // Add connection listener
         connectionFactory.addConnectionListener(connection -> {
             if (connection.isOpen()) {
                 System.out.println("✅ RabbitMQ connection established");

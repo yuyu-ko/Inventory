@@ -19,7 +19,7 @@ import java.util.List;
 public class OrderCSVReader {
 
     /**
-     * 从 CSV 文件读取订单
+     * Read orders from CSV file
      */
     public List<OrderCSVRecord> readOrdersFromCSV(String csvFilePath) {
         try {
@@ -34,7 +34,7 @@ public class OrderCSVReader {
                 CsvToBean<OrderCSVRecord> csvToBean = new CsvToBeanBuilder<OrderCSVRecord>(reader)
                         .withType(OrderCSVRecord.class)
                         .withIgnoreLeadingWhiteSpace(true)
-                        .withSkipLines(0) // 跳过标题行
+                        .withSkipLines(0) // Skip header row
                         .build();
 
                 List<OrderCSVRecord> orders = csvToBean.parse();

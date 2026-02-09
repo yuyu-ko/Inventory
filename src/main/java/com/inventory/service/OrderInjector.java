@@ -46,7 +46,7 @@ public class OrderInjector {
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
     /**
-     * 初始化：从 CSV 文件加载订单（仅加载在模拟时间范围内的订单）
+     * Initialize: Load orders from CSV file (only load orders within simulation time range)
      */
     @PostConstruct
     public void initialize() {
@@ -56,18 +56,18 @@ public class OrderInjector {
     }
 
     /**
-     * 从 CSV 文件加载订单（仅加载在模拟时间范围内的订单）
+     * Load orders from CSV file (only load orders within simulation time range)
      */
     private void loadOrdersFromCSV() {
         try {
             log.info("Loading orders from CSV file: {}", csvFilePath);
             List<OrderCSVRecord> csvRecords = csvReader.readOrdersFromCSV(csvFilePath);
             
-            // 按 ORDER_ID 分组，将多行合并为一个订单
+            // Group by ORDER_ID, merge multiple rows into one order
             Map<String, List<OrderCSVRecord>> ordersByOrderId = csvRecords.stream()
                     .collect(Collectors.groupingBy(OrderCSVRecord::getOrderId));
             
-            // 转换为订单消息并过滤在模拟时间范围内的订单
+            // Convert to order messages and filter orders within simulation time range
             List<OrderReceivedMessage> orders = ordersByOrderId.values().stream()
                     .map(this::convertToOrderMessage)
                     .filter(order -> simulationClock.isTimeInRange(order.getOrderPlacedTime()))
@@ -82,14 +82,14 @@ public class OrderInjector {
     }
 
     /**
-     * 将 CSV 记录列表（同一订单的多行）转换为订单消息
+     * Convert CSV record list (multiple rows for same order) to order message
      */
     private OrderReceivedMessage convertToOrderMessage(List<OrderCSVRecord> csvRecords) {
         if (csvRecords == null || csvRecords.isEmpty()) {
             throw new IllegalArgumentException("CSV records cannot be empty");
         }
         
-        // 使用第一行获取订单基本信息
+        // Use first row to get basic order information
         OrderCSVRecord firstRecord = csvRecords.get(0);
         
         OrderReceivedMessage message = new OrderReceivedMessage();
@@ -100,7 +100,7 @@ public class OrderInjector {
         message.setCustomerId(firstRecord.getCustomerId());
         message.setSenderId("OrderInjector");
         
-        // 将多行转换为订单项列表
+        // Convert multiple rows to order item list
         List<OrderReceivedMessage.OrderItemDTO> items = csvRecords.stream()
                 .map(record -> {
                     OrderReceivedMessage.OrderItemDTO dto = new OrderReceivedMessage.OrderItemDTO();
@@ -120,7 +120,7 @@ public class OrderInjector {
     }
 
     /**
-     * 定时注入订单：根据模拟时钟时间发送订单
+     * Scheduled order injection: Send orders based on simulation clock time
      */
     @Scheduled(fixedDelayString = "${inventory.simulation.tick-interval-ms:1000}")
     public void injectOrders() {
@@ -131,19 +131,19 @@ public class OrderInjector {
     }
 
     /**
-     * 从 CSV 队列注入订单（使用模拟时钟时间）
+     * Inject orders from CSV queue (using simulation clock time)
      */
     private void injectOrdersFromCSV() {
         LocalDateTime currentSimTime = simulationClock.getCurrentTime();
         
-        // 发送所有到期的订单
+        // Send all due orders
         List<OrderReceivedMessage> ordersToSend = new ArrayList<>();
         List<OrderReceivedMessage> remainingOrders = new ArrayList<>();
         
         while (!orderQueue.isEmpty()) {
             OrderReceivedMessage order = orderQueue.poll();
             if (order != null) {
-                // 如果订单的下单时间已到或已过（相对于模拟时间），则发送
+                // If order's placed time has arrived or passed (relative to simulation time), send it
                 if (!order.getOrderPlacedTime().isAfter(currentSimTime)) {
                     ordersToSend.add(order);
                 } else {
@@ -152,17 +152,17 @@ public class OrderInjector {
             }
         }
         
-        // 将未到期的订单放回队列
+        // Put non-due orders back to queue
         orderQueue.addAll(remainingOrders);
         
-        // 发送到期的订单
+        // Send due orders
         for (OrderReceivedMessage order : ordersToSend) {
             publishOrder(order);
         }
     }
 
     /**
-     * 发布订单到消息队列
+     * Publish order to message queue
      */
     private void publishOrder(OrderReceivedMessage order) {
         try {
@@ -175,7 +175,7 @@ public class OrderInjector {
     }
 
     /**
-     * 手动注入订单（用于测试）
+     * Manually inject order (for testing)
      */
     public void injectOrder(OrderReceivedMessage order) {
         order.setSenderId("OrderInjector");

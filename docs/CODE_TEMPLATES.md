@@ -1,10 +1,10 @@
-# 代码模板参考
+# Code Template Reference
 
-> **注意**：这些只是**模板和提示**，帮助你理解需要实现什么。**不要直接复制**，你需要理解后自己实现。
+> **Note**: These are only **templates and hints** to help you understand what needs to be implemented. **Do not copy directly**. You need to understand and implement it yourself.
 
-## 📋 实体类模板
+## 📋 Entity Class Templates
 
-### Order.java 字段提示
+### Order.java Field Hints
 
 ```java
 @Entity
@@ -18,7 +18,7 @@ public class Order {
     private String orderId;  // ORD-000001
     
     @Enumerated(EnumType.STRING)
-    private OrderType orderType;  // PICKUP 或 DELIVERY
+    private OrderType orderType;  // PICKUP or DELIVERY
     
     @Enumerated(EnumType.STRING)
     private OrderStatus status;  // RECEIVED, PROCESSING, COMPLETED, CANCELLED
@@ -30,11 +30,11 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> items;
     
-    // TODO: 添加 getter/setter 或使用 Lombok
+    // TODO: Add getter/setter or use Lombok
 }
 ```
 
-### OrderItem.java 字段提示
+### OrderItem.java Field Hints
 
 ```java
 @Entity
@@ -52,11 +52,11 @@ public class OrderItem {
     @JoinColumn(name = "order_id")
     private Order order;
     
-    // TODO: 添加 getter/setter
+    // TODO: Add getter/setter
 }
 ```
 
-### InventoryItem.java 字段提示
+### InventoryItem.java Field Hints
 
 ```java
 @Entity
@@ -70,12 +70,12 @@ public class InventoryItem {
     private String sku;
     
     private String name;
-    private Integer quantity;  // 总库存
-    private Integer reservedQuantity;  // 预留数量
+    private Integer quantity;  // Total inventory
+    private Integer reservedQuantity;  // Reserved quantity
     private String temperatureZone;
     private Integer lowStockThreshold;
     
-    // TODO: 添加方法计算可用库存
+    // TODO: Add method to calculate available inventory
     // public Integer getAvailableQuantity() {
     //     return quantity - reservedQuantity;
     // }
@@ -84,9 +84,9 @@ public class InventoryItem {
 
 ---
 
-## 🔧 Service 类模板
+## 🔧 Service Class Templates
 
-### OrderManager.java 结构提示
+### OrderManager.java Structure Hints
 
 ```java
 @Service
@@ -99,33 +99,33 @@ public class OrderManager {
     private final RabbitTemplate rabbitTemplate;
     private final SimulationClock simulationClock;
     
-    // TODO: 实现消息监听
+    // TODO: Implement message listener
     @RabbitListener(queues = "${spring.rabbitmq.topic.prefix:sim}.order.received")
     public void handleOrderReceived(OrderReceivedMessage message) {
-        // 1. 创建订单实体
-        // 2. 保存到数据库
-        // 3. 检查库存
-        // 4. 发送库存预留消息或更新订单状态为失败
+        // 1. Create order entity
+        // 2. Save to database
+        // 3. Check inventory
+        // 4. Send inventory reservation message or update order status to failed
     }
     
-    // TODO: 实现订单处理方法
+    // TODO: Implement order processing method
     private void processOrder(Order order) {
-        // 1. 更新订单状态为 PROCESSING
-        // 2. 发送库存扣除消息
-        // 3. 更新订单状态为 COMPLETED
-        // 4. 发送订单处理完成消息
+        // 1. Update order status to PROCESSING
+        // 2. Send inventory deduction message
+        // 3. Update order status to COMPLETED
+        // 4. Send order processing completion message
     }
     
-    // TODO: 实现库存检查方法
+    // TODO: Implement inventory check method
     private boolean checkAndReserveInventory(Order order, List<OrderItemDTO> items) {
-        // 检查每个商品的库存是否充足
-        // 如果充足，发送预留消息
-        // 返回 true/false
+        // Check if inventory is sufficient for each item
+        // If sufficient, send reservation message
+        // Return true/false
     }
 }
 ```
 
-### InventoryManager.java 结构提示
+### InventoryManager.java Structure Hints
 
 ```java
 @Service
@@ -138,45 +138,45 @@ public class InventoryManager {
     @RabbitListener(queues = "${spring.rabbitmq.topic.prefix:sim}.inventory.update")
     @Transactional
     public void handleInventoryUpdate(InventoryUpdateMessage message) {
-        // TODO: 根据 operation 执行不同操作
+        // TODO: Execute different operations based on operation type
         switch (message.getOperation()) {
             case "RESERVE":
-                // 预留库存
+                // Reserve inventory
                 break;
             case "DEDUCT":
-                // 扣除库存
+                // Deduct inventory
                 break;
             case "REPLENISH":
-                // 补货
+                // Replenish inventory
                 break;
             case "RELEASE":
-                // 释放预留
+                // Release reservation
                 break;
         }
         
-        // 检查是否需要自动补货
+        // Check if auto-replenishment is needed
         checkAndReplenish(item);
     }
     
-    // TODO: 实现预留库存
+    // TODO: Implement inventory reservation
     private void reserveInventory(InventoryItem item, Integer quantity) {
-        // 检查可用库存
-        // 如果充足，增加预留数量
+        // Check available inventory
+        // If sufficient, increase reserved quantity
     }
     
-    // TODO: 实现扣除库存
+    // TODO: Implement inventory deduction
     private void deductInventory(InventoryItem item, Integer quantity) {
-        // 先扣除预留的，不够再从总库存扣除
+        // First deduct from reserved, then from total inventory if not enough
     }
     
-    // TODO: 实现自动补货检查
+    // TODO: Implement auto-replenishment check
     private void checkAndReplenish(InventoryItem item) {
-        // 如果库存 <= 阈值，自动补货
+        // If inventory <= threshold, auto-replenish
     }
 }
 ```
 
-### SimulationClock.java 结构提示
+### SimulationClock.java Structure Hints
 
 ```java
 @Component
@@ -203,26 +203,26 @@ public class SimulationClock {
     
     @PostConstruct
     public void initialize() {
-        // TODO: 解析时间字符串
-        // TODO: 初始化 currentSimTime = simStartTime
-        // TODO: 设置 isRunning = true
+        // TODO: Parse time strings
+        // TODO: Initialize currentSimTime = simStartTime
+        // TODO: Set isRunning = true
     }
     
-    // TODO: 实现 tick 方法（由 SimulationRunner 调用）
+    // TODO: Implement tick method (called by SimulationRunner)
     public void tick() {
-        // 计算时间增量（考虑 speedFactor）
-        // 更新 currentSimTime
-        // 检查是否到达结束时间
+        // Calculate time increment (consider speedFactor)
+        // Update currentSimTime
+        // Check if end time is reached
     }
     
-    // TODO: 实现其他辅助方法
+    // TODO: Implement other helper methods
     public boolean isRunning() { ... }
     public LocalDateTime getCurrentTime() { ... }
     public String formatTime(LocalDateTime time) { ... }
 }
 ```
 
-### OrderInjector.java 结构提示
+### OrderInjector.java Structure Hints
 
 ```java
 @Service
@@ -238,44 +238,44 @@ public class OrderInjector {
     
     @PostConstruct
     public void initialize() {
-        // TODO: 从 CSV 读取订单
-        // TODO: 转换为 OrderReceivedMessage
-        // TODO: 按时间排序
-        // TODO: 过滤出模拟时间范围内的订单
-        // TODO: 添加到 orderQueue
+        // TODO: Read orders from CSV
+        // TODO: Convert to OrderReceivedMessage
+        // TODO: Sort by time
+        // TODO: Filter orders within simulation time range
+        // TODO: Add to orderQueue
     }
     
     @Scheduled(fixedDelayString = "${inventory.order-injector.injection-interval-seconds:5}000")
     public void injectOrders() {
-        // TODO: 检查模拟时钟是否运行
-        // TODO: 遍历订单队列
-        // TODO: 如果订单时间 <= 当前模拟时间，发送订单
-        // TODO: 从队列中移除已发送的订单
+        // TODO: Check if simulation clock is running
+        // TODO: Iterate through order queue
+        // TODO: If order time <= current simulation time, send order
+        // TODO: Remove sent orders from queue
     }
     
     private void publishOrder(OrderReceivedMessage order) {
-        // TODO: 使用 rabbitTemplate 发送消息
-        // TODO: 记录日志
+        // TODO: Use rabbitTemplate to send message
+        // TODO: Log
     }
 }
 ```
 
 ---
 
-## 📨 消息发送示例
+## 📨 Message Sending Examples
 
-### 发送订单消息
+### Send Order Message
 
 ```java
 String exchange = "symbotic.simulation";
 String routingKey = "sim.order.received";
 OrderReceivedMessage message = new OrderReceivedMessage();
-// ... 设置消息字段
+// ... Set message fields
 
 rabbitTemplate.convertAndSend(exchange, routingKey, message);
 ```
 
-### 发送库存更新消息
+### Send Inventory Update Message
 
 ```java
 InventoryUpdateMessage updateMessage = new InventoryUpdateMessage();
@@ -289,7 +289,7 @@ rabbitTemplate.convertAndSend(exchange, "sim.inventory.update", updateMessage);
 
 ---
 
-## 🔍 Repository 示例
+## 🔍 Repository Examples
 
 ```java
 public interface OrderRepository extends JpaRepository<Order, Long> {
@@ -304,10 +304,10 @@ public interface InventoryItemRepository extends JpaRepository<InventoryItem, Lo
 
 ---
 
-## 📝 日志示例
+## 📝 Logging Examples
 
 ```java
-// 信息日志
+// Info log
 log.info("[{}] ord-{} received", 
     simulationClock.formatTime(simulationClock.getCurrentTime()), 
     orderId);
@@ -316,32 +316,32 @@ log.info("[{}] ord-{} completed successfully",
     simulationClock.formatTime(simulationClock.getCurrentTime()), 
     orderId);
 
-// 警告日志
+// Warning log
 log.warn("[{}] ord-{} failed - insufficient inventory", 
     simulationClock.formatTime(simulationClock.getCurrentTime()), 
     orderId);
 
-// 调试日志
+// Debug log
 log.debug("Processing order: {}, items: {}", orderId, items);
 ```
 
 ---
 
-## ⚠️ 重要提示
+## ⚠️ Important Notes
 
-1. **这些只是模板**：不要直接复制，理解后自己实现
-2. **字段名可能不同**：根据你的设计调整
-3. **方法名可能不同**：使用你习惯的命名
-4. **逻辑需要自己思考**：这里只提供结构提示
-5. **遇到问题查文档**：官方文档是最好的参考
+1. **These are only templates**: Do not copy directly, understand and implement yourself
+2. **Field names may differ**: Adjust according to your design
+3. **Method names may differ**: Use your preferred naming conventions
+4. **Logic needs your own thinking**: Only structure hints are provided here
+5. **Check documentation when encountering problems**: Official documentation is the best reference
 
 ---
 
-## 🎯 下一步
+## 🎯 Next Steps
 
-1. 理解这些模板的结构
-2. 参考 `IMPLEMENTATION_GUIDE.md` 的详细说明
-3. 开始实现你自己的代码
-4. 遇到问题及时查看文档或询问
+1. Understand the structure of these templates
+2. Refer to detailed descriptions in `IMPLEMENTATION_GUIDE.md`
+3. Start implementing your own code
+4. Check documentation or ask questions when encountering problems
 
-**记住：自己实现的代码才是你真正掌握的！**
+**Remember: Code you implement yourself is what you truly master!**

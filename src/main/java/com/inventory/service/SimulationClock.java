@@ -48,18 +48,18 @@ public class SimulationClock {
     }
 
     /**
-     * 模拟时钟 tick（由外部调用）
+     * Simulation clock tick (called externally)
      */
     public void tick() {
         if (!isRunning) {
             return;
         }
 
-        // 根据 speedFactor 计算实际增加的秒数
+        // Calculate actual seconds to add based on speedFactor
         int secondsToAdd = (int) (tickSeconds * speedFactor);
         currentSimTime = currentSimTime.plusSeconds(secondsToAdd);
 
-        // 检查是否到达结束时间
+        // Check if end time is reached
         if (currentSimTime.isAfter(simEndTime) || currentSimTime.equals(simEndTime)) {
             isRunning = false;
             log.info("=== Simulation Ended at {} ===", formatTime(currentSimTime));
@@ -67,42 +67,42 @@ public class SimulationClock {
     }
 
     /**
-     * 获取当前模拟时间
+     * Get current simulation time
      */
     public LocalDateTime getCurrentTime() {
         return currentSimTime;
     }
 
     /**
-     * 检查模拟是否在运行
+     * Check if simulation is running
      */
     public boolean isRunning() {
         return isRunning && !currentSimTime.isAfter(simEndTime);
     }
 
     /**
-     * 格式化时间用于日志输出
+     * Format time for log output
      */
     public String formatTime(LocalDateTime time) {
         return time.format(timeFormatter);
     }
 
     /**
-     * 格式化时间用于日志输出（带日期）
+     * Format time for log output (with date)
      */
     public String formatDateTime(LocalDateTime time) {
         return time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
     /**
-     * 检查指定时间是否在模拟时间范围内
+     * Check if specified time is within simulation time range
      */
     public boolean isTimeInRange(LocalDateTime time) {
         return !time.isBefore(simStartTime) && !time.isAfter(simEndTime);
     }
 
     /**
-     * 获取模拟进度（0.0 到 1.0）
+     * Get simulation progress (0.0 to 1.0)
      */
     public double getProgress() {
         long totalSeconds = java.time.Duration.between(simStartTime, simEndTime).getSeconds();

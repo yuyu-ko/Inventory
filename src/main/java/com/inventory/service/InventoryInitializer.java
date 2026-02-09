@@ -34,7 +34,7 @@ public class InventoryInitializer {
     private int defaultLowStockThreshold;
 
     /**
-     * 应用启动时自动从 CSV 文件初始化库存
+     * Auto-initialize inventory from CSV file on application startup
      */
     @PostConstruct
     public void initializeInventoryFromCSV() {

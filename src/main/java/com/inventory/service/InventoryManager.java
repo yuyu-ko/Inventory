@@ -35,7 +35,7 @@ public class InventoryManager {
     private int replenishmentQuantity;
 
     /**
-     * 监听库存更新消息
+     * Listen to inventory update messages
      */
     @RabbitListener(queues = "${spring.rabbitmq.topic.prefix:sim}.inventory.update")
     @Transactional
@@ -62,12 +62,12 @@ public class InventoryManager {
                 log.warn("Inventory Manager: Unknown operation {}", message.getOperation());
         }
 
-        // 检查是否需要补货
+        // Check if replenishment is needed
         checkAndReplenish(item);
     }
 
     /**
-     * 获取或创建库存项
+     * Get or create inventory item
      */
     private InventoryItem getOrCreateInventoryItem(String sku) {
         Optional<InventoryItem> optional = inventoryRepository.findBySku(sku);
@@ -75,7 +75,7 @@ public class InventoryManager {
             return optional.get();
         }
 
-        // 创建新库存项
+        // Create new inventory item
         InventoryItem item = new InventoryItem();
         item.setSku(sku);
         item.setName("Item " + sku);
@@ -88,7 +88,7 @@ public class InventoryManager {
     }
 
     /**
-     * 预留库存
+     * Reserve inventory
      */
     private void reserveInventory(InventoryItem item, Integer quantity) {
         if (quantity == null || quantity <= 0) return;
@@ -106,7 +106,7 @@ public class InventoryManager {
     }
 
     /**
-     * 释放预留库存
+     * Release reserved inventory
      */
     private void releaseInventory(InventoryItem item, Integer quantity) {
         if (quantity == null || quantity <= 0) return;
@@ -121,7 +121,7 @@ public class InventoryManager {
     }
 
     /**
-     * 扣除库存
+     * Deduct inventory
      */
     private void deductInventory(InventoryItem item, Integer quantity) {
         if (quantity == null || quantity <= 0) return;
@@ -139,11 +139,11 @@ public class InventoryManager {
     }
 
     /**
-     * 补货
+     * Replenish inventory
      */
     private void replenishInventory(InventoryItem item, Integer quantity) {
         if (quantity == null || quantity <= 0) {
-            quantity = replenishmentQuantity; // 使用默认补货量
+            quantity = replenishmentQuantity; // Use default replenishment quantity
         }
 
         item.setQuantity(item.getQuantity() + quantity);
@@ -154,27 +154,27 @@ public class InventoryManager {
     }
 
     /**
-     * 检查并自动补货
+     * Check and auto-replenish
      */
     private void checkAndReplenish(InventoryItem item) {
         if (item.getQuantity() <= item.getLowStockThreshold()) {
             log.warn("Inventory Manager: Low stock detected for SKU {}. Current: {}, Threshold: {}", 
                 item.getSku(), item.getQuantity(), item.getLowStockThreshold());
             
-            // 自动补货
+            // Auto-replenish
             replenishInventory(item, replenishmentQuantity);
         }
     }
 
     /**
-     * 查询库存（如果不存在则自动创建）
+     * Query inventory (auto-create if not exists)
      */
     public InventoryItem getInventory(String sku) {
         return getOrCreateInventoryItem(sku);
     }
 
     /**
-     * 初始化库存（用于测试和 API）
+     * Initialize inventory (for testing and API)
      */
     public void initializeInventory(String sku, int quantity, String temperatureZone) {
         InventoryItem item = getOrCreateInventoryItem(sku);
@@ -184,7 +184,7 @@ public class InventoryManager {
     }
 
     /**
-     * 从 CSV 初始化库存（支持完整字段）
+     * Initialize inventory from CSV (supports full fields)
      */
     public void initializeInventoryFromCSV(String sku, String name, int quantity, String temperatureZone, int lowStockThreshold) {
         Optional<InventoryItem> optional = inventoryRepository.findBySku(sku);
@@ -192,13 +192,13 @@ public class InventoryManager {
         
         if (optional.isPresent()) {
             item = optional.get();
-            // 更新现有库存
+            // Update existing inventory
             item.setName(name);
             item.setQuantity(quantity);
             item.setTemperatureZone(temperatureZone);
             item.setLowStockThreshold(lowStockThreshold);
         } else {
-            // 创建新库存项
+            // Create new inventory item
             item = new InventoryItem();
             item.setSku(sku);
             item.setName(name);

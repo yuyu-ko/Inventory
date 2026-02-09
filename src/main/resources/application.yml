@@ -20,14 +20,14 @@ spring:
     publisher-returns: true
     template:
       mandatory: true
-    # 连接失败时不阻止应用启动
+    # Don't block application startup on connection failure
     listener:
       simple:
         retry:
           enabled: true
           initial-interval: 1000
           max-attempts: 3
-    # 自动恢复连接
+    # Auto-recover connection
     connection-timeout: 10000
 
   # H2 Database Configuration
@@ -62,24 +62,24 @@ spring:
 inventory:
   simulation:
     enabled: true
-    sim-start-time: "2024-01-13T08:00:00"  # 模拟开始时间
-    sim-end-time: "2024-01-13T18:00:00"    # 模拟结束时间
-    tick-seconds: 60                        # 每次 tick 增加的秒数
-    tick-interval-ms: 1000                 # tick 间隔（毫秒）
-    speed-factor: 2.0                      # 加速因子（1.0 = 正常速度，2.0 = 2倍速）
+    sim-start-time: "2024-01-13T08:00:00"  # Simulation start time
+    sim-end-time: "2024-01-13T18:00:00"    # Simulation end time
+    tick-seconds: 60                        # Seconds to advance per tick
+    tick-interval-ms: 1000                 # Tick interval (milliseconds)
+    speed-factor: 2.0                      # Speed factor (1.0 = normal speed, 2.0 = 2x speed)
   
   order-injector:
     enabled: true
     injection-interval-seconds: 5
-    use-csv: true  # 使用 CSV 文件读取订单
-    csv-file: data/orders_sample.csv  # CSV 文件路径（相对于 resources 目录）
+    use-csv: true  # Use CSV file to read orders
+    csv-file: data/orders_sample.csv  # CSV file path (relative to resources directory)
   
   inventory:
-    csv-file: data/inventory_sample.csv  # 库存 CSV 文件路径
-    auto-initialize: true                # 启动时自动从 CSV 初始化库存
-    initial-stock: 1000                  # 默认初始库存（CSV 中未指定时使用）
-    low-stock-threshold: 100             # 默认低库存阈值（CSV 中未指定时使用）
-    replenishment-quantity: 500          # 自动补货数量
+    csv-file: data/inventory_sample.csv  # Inventory CSV file path
+    auto-initialize: true                # Auto-initialize inventory from CSV on startup
+    initial-stock: 1000                  # Default initial stock (used when not specified in CSV)
+    low-stock-threshold: 100             # Default low stock threshold (used when not specified in CSV)
+    replenishment-quantity: 500          # Auto-replenishment quantity
 
 # Logging
 logging:

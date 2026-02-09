@@ -1,22 +1,22 @@
-# Git 提交检查清单
+# Git Commit Checklist
 
-## 📋 快速检查
+## 📋 Quick Check
 
-### ✅ 必须提交的文件
+### ✅ Files That Must Be Committed
 
-#### 配置文件
+#### Configuration Files
 - [ ] `.gitignore`
 - [ ] `pom.xml`
 - [ ] `docker-compose.yml`
 - [ ] `README.md`
 
-#### 文档目录（docs/）
+#### Documentation Directory (docs/)
 - [ ] `docs/HOW_TO_START.md`
-- [ ] `docs/STUDENT_GUIDE.md`
+- [ ] `docs/PROJECT_GUIDE.md`
 - [ ] `docs/IMPLEMENTATION_GUIDE.md`
 - [ ] `docs/CODE_TEMPLATES.md`
 - [ ] `docs/WEEKLY_PLAN.md`
-- [ ] `docs/STUDENT_QUICKSTART.md`
+- [ ] `docs/QUICKSTART.md`
 - [ ] `docs/PROJECT_INDEX.md`
 - [ ] `docs/SYSTEM_DESIGN.md`
 - [ ] `docs/ARCHITECTURE_DIAGRAM.md`
@@ -24,155 +24,153 @@
 - [ ] `docs/INVENTORY_CSV_FORMAT.md`
 - [ ] `docs/GIT_COMMIT_GUIDE.md`
 
-#### 根目录文档
+#### Root Directory Documentation
 - [ ] `SETUP.md`
 - [ ] `TROUBLESHOOTING.md`
-- [ ] `QUICK_START.md`（如果存在）
 
-#### 配置文件
+#### Configuration Files
 - [ ] `src/main/resources/application.yml`
 
-#### 示例数据
+#### Sample Data
 - [ ] `src/main/resources/data/orders_sample.csv`
 - [ ] `src/main/resources/data/inventory_sample.csv`
 
-#### 启动脚本
+#### Startup Scripts
 - [ ] `start.sh`
 - [ ] `start.bat`
 
-#### Java 源代码（根据你的决定）
-- [ ] `src/main/java/` 目录（如果是参考实现）
-- [ ] 或创建 `starter/` 分支只包含骨架代码
+#### Java Source Code (Based on Your Decision)
+- [ ] `src/main/java/` directory (if providing reference implementation)
+- [ ] Or create `starter/` branch with skeleton code only
 
 ---
 
-### ❌ 不应该提交的文件
+### ❌ Files That Should NOT Be Committed
 
-#### 编译产物（由 .gitignore 自动排除）
-- [ ] `target/` 目录
-- [ ] `*.class` 文件
-- [ ] `*.jar` 文件
+#### Build Artifacts (Automatically Excluded by .gitignore)
+- [ ] `target/` directory
+- [ ] `*.class` files
+- [ ] `*.jar` files
 
-#### IDE 配置（由 .gitignore 自动排除）
-- [ ] `.idea/` 目录
-- [ ] `.vscode/` 目录
-- [ ] `*.iml` 文件
-- [ ] `.settings/` 目录
+#### IDE Configuration (Automatically Excluded by .gitignore)
+- [ ] `.idea/` directory
+- [ ] `.vscode/` directory
+- [ ] `*.iml` files
+- [ ] `.settings/` directory
 
 ---
 
-## 🔍 检查命令
+## 🔍 Check Commands
 
-### 1. 查看所有将要提交的文件
+### 1. View All Files to Be Committed
 ```bash
 git status
 ```
 
-### 2. 确认 .gitignore 生效
+### 2. Confirm .gitignore is Working
 ```bash
-# 检查 target/ 是否被忽略
+# Check if target/ is ignored
 git check-ignore -v target/
 
-# 应该输出类似：.gitignore:1:target/ target/
+# Should output something like: .gitignore:1:target/ target/
 ```
 
-### 3. 查看所有已跟踪的文件
+### 3. View All Tracked Files
 ```bash
 git ls-files
 ```
 
-### 4. 检查是否有不应该提交的文件
+### 4. Check for Files That Should Not Be Committed
 ```bash
-# 检查是否有 .class 文件
+# Check for .class files
 find . -name "*.class" | grep -v target
 
-# 检查是否有大文件（>10MB）
+# Check for large files (>10MB)
 find . -type f -size +10M | grep -v target | grep -v .git
 ```
 
 ---
 
-## 📝 推荐的提交流程
+## 📝 Recommended Commit Process
 
-### 第一次提交
+### First Commit
 ```bash
-# 1. 检查 .gitignore
+# 1. Check .gitignore
 cat .gitignore
 
-# 2. 查看状态
+# 2. View status
 git status
 
-# 3. 添加所有文件
+# 3. Add all files
 git add .
 
-# 4. 检查将要提交的内容
+# 4. Check what will be committed
 git status
 
-# 5. 提交
+# 5. Commit
 git commit -m "Initial commit: Inventory Management Simulator
 
-- Add project documentation and student guides
+- Add project documentation and guides
 - Add Maven configuration (pom.xml)
 - Add Docker Compose setup
 - Add sample CSV data files (orders, inventory)
 - Add implementation guides and code templates
 - Add setup and troubleshooting guides"
 
-# 6. 如果已配置远程仓库
+# 6. If remote repository is configured
 git remote -v
 git push origin main
 ```
 
 ---
 
-## ⚠️ 特别注意
+## ⚠️ Special Notes
 
-### 1. application.yml 中的敏感信息
-检查 `application.yml` 是否包含：
-- ❌ 密码
-- ❌ API 密钥
-- ❌ 数据库连接字符串（生产环境）
+### 1. Sensitive Information in application.yml
+Check if `application.yml` contains:
+- ❌ Passwords
+- ❌ API keys
+- ❌ Database connection strings (production)
 
-如果有，应该：
-- 使用环境变量
-- 或创建 `application.example.yml` 作为模板
+If yes, should:
+- Use environment variables
+- Or create `application.example.yml` as template
 
-### 2. Java 源代码的提交策略
+### 2. Java Source Code Commit Strategy
 
-**选项 A：作为参考实现提交**
-- 在 README 中明确说明：这是参考实现，学生应该自己写代码
-- 在代码中添加注释：`// TODO: 学生需要自己实现`
-- 优点：学生可以参考
+**Option A: Commit as Reference Implementation**
+- Clearly state in README: This is a reference implementation
+- Add comments in code: `// TODO: Implementation required`
+- Pros: Can be used as reference
 
-**选项 B：不提交源代码**
-- 只提交文档、配置、示例数据
-- 优点：强制学生自己实现
-- 缺点：学生缺少参考
+**Option B: Don't Commit Source Code**
+- Only commit documentation, configuration, sample data
+- Pros: Forces independent implementation
+- Cons: No reference available
 
-**选项 C：创建两个分支**
-- `main` 分支：完整实现（参考）
-- `starter` 分支：只有骨架代码（学生使用）
-
----
-
-## ✅ 最终确认
-
-提交前最后检查：
-- [ ] `.gitignore` 文件存在且配置正确
-- [ ] 没有编译产物（target/, *.class）
-- [ ] 没有 IDE 配置文件
-- [ ] 没有敏感信息
-- [ ] 所有文档都已添加
-- [ ] README.md 说明了这是学生项目
-- [ ] 提交信息清晰明了
+**Option C: Create Two Branches**
+- `main` branch: Complete implementation (reference)
+- `starter` branch: Skeleton code only
 
 ---
 
-## 🚀 快速提交
+## ✅ Final Confirmation
+
+Before committing, final check:
+- [ ] `.gitignore` file exists and is configured correctly
+- [ ] No build artifacts (target/, *.class)
+- [ ] No IDE configuration files
+- [ ] No sensitive information
+- [ ] All documentation has been added
+- [ ] Commit message is clear and descriptive
+
+---
+
+## 🚀 Quick Commit
 
 ```bash
-# 一键检查并提交
+# One-click check and commit
 git add .
-git status  # 仔细检查
+git status  # Review carefully
 git commit -m "Add inventory management simulator project files"
 ```

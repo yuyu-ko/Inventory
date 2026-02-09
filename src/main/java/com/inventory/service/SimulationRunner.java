@@ -17,7 +17,7 @@ public class SimulationRunner {
     private long tickIntervalMs;
 
     /**
-     * 定时 tick 模拟时钟
+     * Scheduled tick simulation clock
      */
     @Scheduled(fixedDelayString = "${inventory.simulation.tick-interval-ms:1000}")
     public void runSimulationTick() {

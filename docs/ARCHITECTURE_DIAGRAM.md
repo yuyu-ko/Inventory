@@ -1,19 +1,19 @@
-# 系统架构图
+# System Architecture Diagrams
 
-## 整体架构
+## Overall Architecture
 
 ```mermaid
 graph TB
-    subgraph "库存管理模拟器"
-        SC[SimulationClock<br/>模拟时钟]
-        SR[SimulationRunner<br/>模拟运行器]
-        OI[Order Injector<br/>订单注入器]
-        OM[Order Manager<br/>订单处理器]
-        IM[Inventory Manager<br/>库存管理器]
+    subgraph "Inventory Management Simulator"
+        SC[SimulationClock]
+        SR[SimulationRunner]
+        OI[Order Injector]
+        OM[Order Manager]
+        IM[Inventory Manager]
     end
     
-    subgraph "数据源"
-        CSV[CSV File<br/>订单数据]
+    subgraph "Data Source"
+        CSV[CSV File<br/>Order Data]
     end
     
     subgraph "RabbitMQ Message Broker"
@@ -23,9 +23,9 @@ graph TB
         Q3[Queue: sim.order.processed]
     end
     
-    subgraph "数据存储"
-        DB1[(订单数据库<br/>H2)]
-        DB2[(库存数据库<br/>H2)]
+    subgraph "Data Storage"
+        DB1[(Order DB<br/>H2)]
+        DB2[(Inventory DB<br/>H2)]
     end
     
     subgraph "REST API"
@@ -34,25 +34,25 @@ graph TB
         API3[Health API]
     end
     
-    subgraph "监控系统"
+    subgraph "Monitoring System"
         ACT[Spring Boot Actuator<br/>/actuator/prometheus]
         PROM[Prometheus<br/>Metrics Collector]
         GRAF[Grafana<br/>Dashboard]
     end
     
-    CSV -->|读取| OI
+    CSV -->|Read| OI
     SR -->|tick| SC
-    SC -->|当前时间| OI
-    OI -->|发布订单| EX
-    EX -->|路由| Q1
-    Q1 -->|消费| OM
-    OM -->|查询/更新| DB1
-    OM -->|发布库存更新| EX
-    EX -->|路由| Q2
-    Q2 -->|消费| IM
-    IM -->|查询/更新| DB2
-    OM -->|发布处理结果| EX
-    EX -->|路由| Q3
+    SC -->|Current Time| OI
+    OI -->|Publish Order| EX
+    EX -->|Route| Q1
+    Q1 -->|Consume| OM
+    OM -->|Query/Update| DB1
+    OM -->|Publish Inventory Update| EX
+    EX -->|Route| Q2
+    Q2 -->|Consume| IM
+    IM -->|Query/Update| DB2
+    OM -->|Publish Result| EX
+    EX -->|Route| Q3
     
     API1 --> OM
     API2 --> IM
@@ -74,7 +74,7 @@ graph TB
     style GRAF fill:#ff5722
 ```
 
-## 消息流程图
+## Message Flow Diagram
 
 ```mermaid
 sequenceDiagram
@@ -88,80 +88,80 @@ sequenceDiagram
     participant DB1 as Order DB
     participant DB2 as Inventory DB
     
-    Note over SR: 定时 tick (每1000ms)
+    Note over SR: Scheduled tick (every 1000ms)
     SR->>SC: tick()
-    SC->>SC: 推进模拟时间
+    SC->>SC: Advance simulation time
     
-    Note over OI: 根据模拟时间检查订单
+    Note over OI: Check orders based on simulation time
     SC->>OI: getCurrentTime()
-    CSV->>OI: 读取订单数据（启动时）
-    OI->>OI: 过滤订单（模拟时间范围内）
+    CSV->>OI: Read order data (on startup)
+    OI->>OI: Filter orders (within simulation time range)
     
-    alt 订单到期 (ORDER_PLACED_TIME <= currentSimTime)
-        OI->>MQ: 发布 OrderReceivedMessage<br/>(sim.order.received)
+    alt Order Due (ORDER_PLACED_TIME <= currentSimTime)
+        OI->>MQ: Publish OrderReceivedMessage<br/>(sim.order.received)
         
-        MQ->>OM: 消费订单消息
-        OM->>DB1: 保存订单 (RECEIVED)
+        MQ->>OM: Consume order message
+        OM->>DB1: Save order (RECEIVED)
         
-        OM->>MQ: 发布 InventoryUpdateMessage<br/>(RESERVE, sim.inventory.update)
+        OM->>MQ: Publish InventoryUpdateMessage<br/>(RESERVE, sim.inventory.update)
         
-        MQ->>IM: 消费库存更新消息
-        IM->>DB2: 检查库存
-        IM->>DB2: 预留库存
+        MQ->>IM: Consume inventory update message
+        IM->>DB2: Check inventory
+        IM->>DB2: Reserve inventory
         
-        alt 库存充足
-            IM-->>OM: 库存预留成功
-            OM->>DB1: 更新订单状态 (PROCESSING)
-            OM->>MQ: 发布 InventoryUpdateMessage<br/>(DEDUCT, sim.inventory.update)
+        alt Sufficient Inventory
+            IM-->>OM: Inventory reserved successfully
+            OM->>DB1: Update order status (PROCESSING)
+            OM->>MQ: Publish InventoryUpdateMessage<br/>(DEDUCT, sim.inventory.update)
             
-            MQ->>IM: 消费扣除库存消息
-            IM->>DB2: 扣除库存
+            MQ->>IM: Consume deduct inventory message
+            IM->>DB2: Deduct inventory
             
-            alt 库存低于阈值
-                IM->>DB2: 自动补货
+            alt Inventory Below Threshold
+                IM->>DB2: Auto-replenish
             end
             
-            OM->>DB1: 更新订单状态 (COMPLETED)
-            OM->>MQ: 发布 OrderProcessedMessage<br/>(sim.order.processed)
-            Note over OM: 输出日志:<br/>[HH:mm:ss] ord-000001<br/>completed successfully
-        else 库存不足
-            OM->>DB1: 更新订单状态 (CANCELLED)
-            OM->>MQ: 发布 OrderProcessedMessage<br/>(FAILED)
-            Note over OM: 输出日志:<br/>[HH:mm:ss] ord-000001<br/>failed - insufficient inventory
+            OM->>DB1: Update order status (COMPLETED)
+            OM->>MQ: Publish OrderProcessedMessage<br/>(sim.order.processed)
+            Note over OM: Output log:<br/>[HH:mm:ss] ord-000001<br/>completed successfully
+        else Insufficient Inventory
+            OM->>DB1: Update order status (CANCELLED)
+            OM->>MQ: Publish OrderProcessedMessage<br/>(FAILED)
+            Note over OM: Output log:<br/>[HH:mm:ss] ord-000001<br/>failed - insufficient inventory
         end
     end
 ```
 
-## 组件交互图
+## Component Interaction Diagram
 
 ```mermaid
 graph LR
-    subgraph "SimulationClock 组件"
-        SC1[初始化<br/>simStartTime/simEndTime]
-        SC2[Tick<br/>推进时间]
-        SC3[获取当前时间<br/>getCurrentTime]
+    subgraph "SimulationClock Component"
+        SC1[Initialize<br/>simStartTime/simEndTime]
+        SC2[Tick<br/>Advance Time]
+        SC3[Get Current Time<br/>getCurrentTime]
     end
     
-    subgraph "Order Injector 组件"
-        OI1[加载 CSV<br/>@PostConstruct]
-        OI2[过滤订单<br/>模拟时间范围]
-        OI3[检查订单时间<br/>ORDER_PLACED_TIME <= currentSimTime]
-        OI4[发布订单]
+    subgraph "Order Injector Component"
+        OI1[Load CSV<br/>@PostConstruct]
+        OI2[Filter Orders<br/>Simulation Time Range]
+        OI3[Check Order Time<br/>ORDER_PLACED_TIME <= currentSimTime]
+        OI4[Publish Order]
     end
     
-    subgraph "Order Manager 组件"
-        OM1[监听订单消息<br/>@RabbitListener]
-        OM2[创建订单实体]
-        OM3[检查库存]
-        OM4[处理订单]
-        OM5[更新订单状态]
+    subgraph "Order Manager Component"
+        OM1[Listen Order Messages<br/>@RabbitListener]
+        OM2[Create Order Entity]
+        OM3[Check Inventory]
+        OM4[Process Order]
+        OM5[Update Order Status]
     end
     
-    subgraph "Inventory Manager 组件"
-        IM1[监听库存消息<br/>@RabbitListener]
-        IM2[预留库存]
-        IM3[扣除库存]
-        IM4[自动补货]
+    subgraph "Inventory Manager Component"
+        IM1[Listen Inventory Messages<br/>@RabbitListener]
+        IM2[Reserve Inventory]
+        IM3[Deduct Inventory]
+        IM4[Auto-Replenish]
     end
     
     SC1 --> SC2
@@ -189,7 +189,7 @@ graph LR
     style IM1 fill:#e8f5e9
 ```
 
-## 数据模型关系图
+## Data Model Relationship Diagram
 
 ```mermaid
 erDiagram
@@ -236,24 +236,24 @@ erDiagram
     OrderCSVRecord ||--o{ Order : "converts to"
 ```
 
-## 模拟时钟流程图
+## Simulation Clock Flow Diagram
 
 ```mermaid
 flowchart TD
-    Start([系统启动]) --> Init[SimulationClock.initialize]
-    Init --> SetTime[设置 simStartTime/simEndTime<br/>currentSimTime = simStartTime]
-    SetTime --> Running{模拟运行中?}
+    Start([System Startup]) --> Init[SimulationClock.initialize]
+    Init --> SetTime[Set simStartTime/simEndTime<br/>currentSimTime = simStartTime]
+    SetTime --> Running{Simulation Running?}
     
-    Running -->|是| Tick[SimulationRunner.tick]
-    Tick --> Calc[计算时间增量<br/>secondsToAdd = tickSeconds × speedFactor]
-    Calc --> Update[更新 currentSimTime]
-    Update --> Check{到达结束时间?}
+    Running -->|Yes| Tick[SimulationRunner.tick]
+    Tick --> Calc[Calculate Time Increment<br/>secondsToAdd = tickSeconds × speedFactor]
+    Calc --> Update[Update currentSimTime]
+    Update --> Check{Reached End Time?}
     
-    Check -->|否| Running
-    Check -->|是| Stop[停止模拟<br/>isRunning = false]
-    Stop --> End([模拟结束])
+    Check -->|No| Running
+    Check -->|Yes| Stop[Stop Simulation<br/>isRunning = false]
+    Stop --> End([Simulation End])
     
-    Running -->|否| End
+    Running -->|No| End
     
     style Start fill:#e1f5ff
     style End fill:#ffccbc
@@ -261,34 +261,34 @@ flowchart TD
     style Stop fill:#ffccbc
 ```
 
-## 订单处理流程图
+## Order Processing Flow Diagram
 
 ```mermaid
 flowchart TD
-    Start([订单到达]) --> Load[Order Injector<br/>加载 CSV 订单]
-    Load --> Filter[过滤订单<br/>模拟时间范围内]
-    Filter --> Queue[订单入队]
+    Start([Order Arrives]) --> Load[Order Injector<br/>Load CSV Orders]
+    Load --> Filter[Filter Orders<br/>Within Simulation Time Range]
+    Filter --> Queue[Enqueue Orders]
     
-    Queue --> CheckTime{模拟时间检查<br/>ORDER_PLACED_TIME <= currentSimTime?}
+    Queue --> CheckTime{Simulation Time Check<br/>ORDER_PLACED_TIME <= currentSimTime?}
     
-    CheckTime -->|否| Wait[等待]
+    CheckTime -->|No| Wait[Wait]
     Wait --> CheckTime
     
-    CheckTime -->|是| Publish[发布订单消息]
-    Publish --> Receive[Order Manager<br/>接收订单]
-    Receive --> Create[创建订单实体]
-    Create --> CheckInv{检查库存}
+    CheckTime -->|Yes| Publish[Publish Order Message]
+    Publish --> Receive[Order Manager<br/>Receive Order]
+    Receive --> Create[Create Order Entity]
+    Create --> CheckInv{Check Inventory}
     
-    CheckInv -->|不足| Failed[订单失败<br/>状态: CANCELLED]
-    Failed --> LogFail[日志: failed - insufficient inventory]
-    LogFail --> End1([结束])
+    CheckInv -->|Insufficient| Failed[Order Failed<br/>Status: CANCELLED]
+    Failed --> LogFail[Log: failed - insufficient inventory]
+    LogFail --> End1([End])
     
-    CheckInv -->|充足| Reserve[预留库存]
-    Reserve --> Process[处理订单]
-    Process --> Deduct[扣除库存]
-    Deduct --> Complete[订单完成<br/>状态: COMPLETED]
-    Complete --> LogSuccess[日志: completed successfully]
-    LogSuccess --> End2([结束])
+    CheckInv -->|Sufficient| Reserve[Reserve Inventory]
+    Reserve --> Process[Process Order]
+    Process --> Deduct[Deduct Inventory]
+    Deduct --> Complete[Order Completed<br/>Status: COMPLETED]
+    Complete --> LogSuccess[Log: completed successfully]
+    LogSuccess --> End2([End])
     
     style Start fill:#e1f5ff
     style End1 fill:#ffccbc
@@ -298,7 +298,7 @@ flowchart TD
     style LogFail fill:#ffccbc
 ```
 
-## 消息类型图
+## Message Type Diagram
 
 ```mermaid
 classDiagram
@@ -336,29 +336,29 @@ classDiagram
     OrderReceivedMessage *-- OrderItemDTO
 ```
 
-## 部署架构图
+## Deployment Architecture Diagram
 
 ```mermaid
 graph TB
-    subgraph "开发环境"
+    subgraph "Development Environment"
         APP[Spring Boot Application<br/>Port: 8080<br/>Actuator: /actuator/prometheus]
         RABBIT[RabbitMQ<br/>Port: 5672, 15672]
         H2[H2 Database<br/>In-Memory]
         CSV[CSV File<br/>resources/data/]
         
-        subgraph "监控系统"
+        subgraph "Monitoring System"
             PROM[Prometheus<br/>Port: 9090]
             GRAF[Grafana<br/>Port: 3000]
         end
     end
     
-    subgraph "生产环境建议"
-        APP2[Spring Boot Application<br/>多实例]
+    subgraph "Production Environment Recommendations"
+        APP2[Spring Boot Application<br/>Multiple Instances]
         RABBIT2[RabbitMQ Cluster]
-        DB[PostgreSQL/MySQL<br/>主从复制]
+        DB[PostgreSQL/MySQL<br/>Master-Slave Replication]
         CACHE[Redis Cache]
-        MONITOR[监控系统<br/>Prometheus + Grafana]
-        LOG[日志聚合<br/>ELK Stack]
+        MONITOR[Monitoring System<br/>Prometheus + Grafana]
+        LOG[Log Aggregation<br/>ELK Stack]
     end
     
     CSV --> APP
@@ -384,23 +384,23 @@ graph TB
     style GRAF fill:#ff5722
 ```
 
-## 时间线图
+## Timeline Diagram
 
 ```mermaid
 gantt
-    title 模拟时间线示例
+    title Simulation Timeline Example
     dateFormat HH:mm
     axisFormat %H:%M
     
-    section 模拟时钟
-    08:00 开始           :milestone, m1, 08:00, 0m
-    08:00 - 18:00 运行    :active, sim, 08:00, 10h
-    18:00 结束           :milestone, m2, 18:00, 0m
+    section Simulation Clock
+    08:00 Start           :milestone, m1, 08:00, 0m
+    08:00 - 18:00 Running    :active, sim, 08:00, 10h
+    18:00 End           :milestone, m2, 18:00, 0m
     
-    section 订单处理
-    ORD-000001 处理      :ord1, 08:00, 1m
-    ORD-000002 处理      :ord2, 08:15, 1m
-    ORD-000003 处理      :ord3, 09:00, 1m
-    ORD-000004 处理      :ord4, 09:30, 1m
-    ORD-000005 处理      :ord5, 10:00, 1m
+    section Order Processing
+    ORD-000001 Process      :ord1, 08:00, 1m
+    ORD-000002 Process      :ord2, 08:15, 1m
+    ORD-000003 Process      :ord3, 09:00, 1m
+    ORD-000004 Process      :ord4, 09:30, 1m
+    ORD-000005 Process      :ord5, 10:00, 1m
 ```

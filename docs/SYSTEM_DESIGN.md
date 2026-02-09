@@ -1,18 +1,18 @@
-# 库存管理模拟器 - 系统设计文档
+# Inventory Management Simulator - System Design Documentation
 
-## 系统概述
+## System Overview
 
-本系统是一个基于 Spring Boot 和 RabbitMQ 的库存管理模拟器，用于模拟订单处理、库存管理和订单处理的完整流程。
+This system is an inventory management simulator based on Spring Boot and RabbitMQ, designed to simulate the complete workflow of order processing, inventory management, and order fulfillment.
 
-系统使用**长格式 CSV** 作为可重放的订单来源，并通过**模拟时钟系统（SimulationClock）**以可配置的时间范围驱动事件注入，从而实现可重现的真实世界订单到达模式。
+The system uses **long-format CSV** as a replayable order source and drives event injection through a **simulation clock system (SimulationClock)** with configurable time ranges, enabling reproducible real-world order arrival patterns.
 
-## 架构设计
+## Architecture Design
 
-### 系统架构图
+### System Architecture Diagram
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        库存管理模拟器                              │
+│                    Inventory Management Simulator                 │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
@@ -27,263 +27,261 @@
 ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
 │ Order Injector│    │Order Manager │    │Inventory     │
 │              │    │              │    │Manager       │
-│ 订单注入器    │    │ 订单处理器    │    │ 库存管理器    │
 └──────────────┘    └──────────────┘    └──────────────┘
         │                     │                     │
         │                     │                     │
         ▼                     ▼                     ▼
 ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-│  Simulation  │    │  订单数据库   │    │  库存数据库   │
+│  Simulation  │    │  Order DB    │    │ Inventory DB │
 │    Clock     │    │  (H2/PostgreSQL)│  │  (H2/PostgreSQL)│
-│  模拟时钟    │    └──────────────┘    └──────────────┘
-└──────────────┘
+└──────────────┘    └──────────────┘    └──────────────┘
         │
         ▼
 ┌──────────────┐
 │   CSV File   │
-│  订单数据源   │
+│  Order Data  │
 └──────────────┘
 ```
 
-## 核心组件
+## Core Components
 
-### 1. SimulationClock (模拟时钟)
+### 1. SimulationClock (Simulation Clock)
 
-**职责：**
-- 管理模拟时间系统
-- 提供时间范围控制和加速运行
-- 作为系统的时间基准
+**Responsibilities:**
+- Manage simulation time system
+- Provide time range control and speed acceleration
+- Serve as the system's time reference
 
-**主要功能：**
-- `initialize()`: 初始化模拟时钟（设置开始/结束时间）
-- `tick()`: 推进模拟时间（根据 tickSeconds 和 speedFactor）
-- `getCurrentTime()`: 获取当前模拟时间
-- `isRunning()`: 检查模拟是否在运行
-- `isTimeInRange()`: 检查时间是否在模拟范围内
+**Main Functions:**
+- `initialize()`: Initialize simulation clock (set start/end time)
+- `tick()`: Advance simulation time (based on tickSeconds and speedFactor)
+- `getCurrentTime()`: Get current simulation time
+- `isRunning()`: Check if simulation is running
+- `isTimeInRange()`: Check if time is within simulation range
 
-**配置参数：**
-- `sim-start-time`: 模拟开始时间（ISO 8601 格式）
-- `sim-end-time`: 模拟结束时间（ISO 8601 格式）
-- `tick-seconds`: 每次 tick 增加的秒数（默认 1）
-- `speed-factor`: 加速因子（1.0 = 正常速度，2.0 = 2倍速）
+**Configuration Parameters:**
+- `sim-start-time`: Simulation start time (ISO 8601 format)
+- `sim-end-time`: Simulation end time (ISO 8601 format)
+- `tick-seconds`: Seconds to advance per tick (default 1)
+- `speed-factor`: Speed factor (1.0 = normal speed, 2.0 = 2x speed)
 
-### 2. SimulationRunner (模拟运行器)
+### 2. SimulationRunner (Simulation Runner)
 
-**职责：**
-- 定时调用 SimulationClock.tick()
-- 控制模拟时钟的推进频率
+**Responsibilities:**
+- Periodically call SimulationClock.tick()
+- Control simulation clock advancement frequency
 
-**主要功能：**
-- `runSimulationTick()`: 定时任务，定期 tick 模拟时钟
+**Main Functions:**
+- `runSimulationTick()`: Scheduled task to periodically tick simulation clock
 
-**配置参数：**
-- `tick-interval-ms`: tick 间隔（毫秒，默认 1000ms）
+**Configuration Parameters:**
+- `tick-interval-ms`: Tick interval (milliseconds, default 1000ms)
 
-### 3. OrderCSVReader (CSV 订单读取器)
+### 3. OrderCSVReader (CSV Order Reader)
 
-**职责：**
-- 从 CSV 文件读取订单数据
-- 支持长格式 CSV（每行一个订单项）
+**Responsibilities:**
+- Read order data from CSV files
+- Support long-format CSV (one order item per line)
 
-**主要功能：**
-- `readOrdersFromCSV()`: 读取并解析 CSV 文件
+**Main Functions:**
+- `readOrdersFromCSV()`: Read and parse CSV file
 
-### 4. Order Injector (订单注入器)
+### 4. Order Injector (Order Injector)
 
-**职责：**
-- 从 CSV 文件加载订单
-- 根据模拟时钟时间顺序注入订单到消息队列
-- 仅加载模拟时间范围内的订单
+**Responsibilities:**
+- Load orders from CSV files
+- Inject orders into message queue sequentially based on simulation clock time
+- Only load orders within simulation time range
 
-**主要功能：**
-- `initialize()`: 启动时从 CSV 加载订单
-- `loadOrdersFromCSV()`: 加载并过滤订单（仅保留模拟时间范围内的订单）
-- `injectOrders()`: 定时检查并发送到期的订单
-- `publishOrder()`: 将订单发布到 RabbitMQ
+**Main Functions:**
+- `initialize()`: Load orders from CSV on startup
+- `loadOrdersFromCSV()`: Load and filter orders (only keep orders within simulation time range)
+- `injectOrders()`: Periodically check and send due orders
+- `publishOrder()`: Publish order to RabbitMQ
 
-**消息发布：**
+**Message Publishing:**
 - Exchange: `symbotic.simulation`
 - Routing Key: `sim.order.received`
 - Message Type: `OrderReceivedMessage`
 
-**订单过滤逻辑：**
-- 仅加载 `ORDER_PLACED_TIME` 在 `[simStartTime, simEndTime]` 范围内的订单
-- 根据当前模拟时间发送订单（`ORDER_PLACED_TIME <= currentSimTime`）
+**Order Filtering Logic:**
+- Only load orders where `ORDER_PLACED_TIME` is within `[simStartTime, simEndTime]` range
+- Send orders based on current simulation time (`ORDER_PLACED_TIME <= currentSimTime`)
 
-### 5. Order Manager (订单处理器)
+### 5. Order Manager (Order Processor)
 
-**职责：**
-- 接收订单消息
-- 检查库存可用性
-- 处理订单（预留库存、扣除库存）
-- 更新订单状态
-- 发布订单处理结果
+**Responsibilities:**
+- Receive order messages
+- Check inventory availability
+- Process orders (reserve inventory, deduct inventory)
+- Update order status
+- Publish order processing results
 
-**主要功能：**
-- `handleOrderReceived()`: 监听订单接收消息
-- `checkAndReserveInventory()`: 检查并预留库存
-- `processOrder()`: 处理订单（扣除库存、更新状态）
+**Main Functions:**
+- `handleOrderReceived()`: Listen to order received messages
+- `checkAndReserveInventory()`: Check and reserve inventory
+- `processOrder()`: Process order (deduct inventory, update status)
 
-**消息监听：**
+**Message Listening:**
 - Queue: `sim.order.received`
 - Message Type: `OrderReceivedMessage`
 
-**消息发布：**
+**Message Publishing:**
 - Exchange: `symbotic.simulation`
-- Routing Key: `sim.inventory.update` (库存更新)
-- Routing Key: `sim.order.processed` (订单处理完成)
+- Routing Key: `sim.inventory.update` (inventory update)
+- Routing Key: `sim.order.processed` (order processing completed)
 
-**日志输出格式：**
-- 成功：`[HH:mm:ss] ord-000001 completed successfully`
-- 失败：`[HH:mm:ss] ord-000001 failed - insufficient inventory`
+**Log Output Format:**
+- Success: `[HH:mm:ss] ord-000001 completed successfully`
+- Failure: `[HH:mm:ss] ord-000001 failed - insufficient inventory`
 
-### 6. Monitoring System (监控系统)
+### 6. Monitoring System (Monitoring System)
 
-**职责：**
-- 收集应用指标（订单处理数量、成功率、处理时间等）
-- 提供可视化 Dashboard
-- 实时监控系统运行状况
+**Responsibilities:**
+- Collect application metrics (order processing count, success rate, processing time, etc.)
+- Provide visualization Dashboard
+- Monitor system running status in real-time
 
-**组件：**
+**Components:**
 
 1. **Spring Boot Actuator**
-   - 暴露 `/actuator/prometheus` endpoint
-   - 提供应用健康状态、指标数据
+   - Expose `/actuator/prometheus` endpoint
+   - Provide application health status and metrics data
 
 2. **Prometheus**
-   - 定期抓取应用指标（scrape interval: 5s）
-   - 存储时间序列数据
-   - 提供 PromQL 查询接口
+   - Periodically scrape application metrics (scrape interval: 5s)
+   - Store time series data
+   - Provide PromQL query interface
 
 3. **Grafana**
-   - 连接 Prometheus 数据源
-   - 创建可视化 Dashboard
-   - 监控关键指标：
-     - 订单接收总数 (`orders_received_total`)
-     - 订单处理总数（按状态：SUCCESS/FAILED/ERROR）
-     - 订单处理成功率
-     - 平均订单处理时间
+   - Connect to Prometheus data source
+   - Create visualization Dashboard
+   - Monitor key metrics:
+     - Total orders received (`orders_received_total`)
+     - Total orders processed (by status: SUCCESS/FAILED/ERROR)
+     - Order processing success rate
+     - Average order processing time
 
-**关键 Metrics：**
-- `orders_received_total`: Counter，订单接收总数
-- `orders_processed_total{status="SUCCESS|FAILED|ERROR"}`: Counter，按状态分类的订单处理总数
-- `orders_processing_time_seconds`: Timer，订单处理时间（包含 count、sum、max）
+**Key Metrics:**
+- `orders_received_total`: Counter, total orders received
+- `orders_processed_total{status="SUCCESS|FAILED|ERROR"}`: Counter, total orders processed by status
+- `orders_processing_time_seconds`: Timer, order processing time (includes count, sum, max)
 
-**配置：**
-- Prometheus 配置文件: `monitoring/prometheus.yml`
-- Grafana 默认账号: admin/admin
-- Prometheus 端口: 9090
-- Grafana 端口: 3000
+**Configuration:**
+- Prometheus configuration file: `monitoring/prometheus.yml`
+- Grafana default account: admin/admin
+- Prometheus port: 9090
+- Grafana port: 3000
 
-### 7. Inventory Manager (库存管理器)
+### 7. Inventory Manager (Inventory Manager)
 
-**职责：**
-- 管理库存数据
-- 处理库存预留、释放、扣除、补货操作
-- 自动检测低库存并触发补货
-- 维护库存状态
+**Responsibilities:**
+- Manage inventory data
+- Handle inventory reservation, release, deduction, and replenishment operations
+- Automatically detect low inventory and trigger replenishment
+- Maintain inventory status
 
-**主要功能：**
-- `handleInventoryUpdate()`: 监听库存更新消息
-- `reserveInventory()`: 预留库存
-- `releaseInventory()`: 释放预留库存
-- `deductInventory()`: 扣除库存
-- `replenishInventory()`: 补货
-- `checkAndReplenish()`: 自动检测并补货
+**Main Functions:**
+- `handleInventoryUpdate()`: Listen to inventory update messages
+- `reserveInventory()`: Reserve inventory
+- `releaseInventory()`: Release reserved inventory
+- `deductInventory()`: Deduct inventory
+- `replenishInventory()`: Replenish inventory
+- `checkAndReplenish()`: Automatically detect and replenish
 
-**消息监听：**
+**Message Listening:**
 - Queue: `sim.inventory.update`
 - Message Type: `InventoryUpdateMessage`
 
-**操作类型：**
-- `RESERVE`: 预留库存
-- `RELEASE`: 释放预留库存
-- `DEDUCT`: 扣除库存
-- `REPLENISH`: 补货
+**Operation Types:**
+- `RESERVE`: Reserve inventory
+- `RELEASE`: Release reserved inventory
+- `DEDUCT`: Deduct inventory
+- `REPLENISH`: Replenish inventory
 
-## 消息流程
+## Message Flow
 
-### 订单处理流程
+### Order Processing Flow
 
 ```
 1. SimulationRunner
-   └─> 定期调用 SimulationClock.tick()
-   └─> 推进模拟时间
+   └─> Periodically call SimulationClock.tick()
+   └─> Advance simulation time
 
 2. Order Injector
-   └─> 根据模拟时间检查订单
-   └─> 发送到期的订单
-   └─> 发布 OrderReceivedMessage
+   └─> Check orders based on simulation time
+   └─> Send due orders
+   └─> Publish OrderReceivedMessage
        └─> Exchange: symbotic.simulation
        └─> Routing Key: sim.order.received
 
 3. Order Manager
-   └─> 接收 OrderReceivedMessage
-   └─> 创建订单实体
-   └─> 检查库存
-   └─> 发布 InventoryUpdateMessage (RESERVE)
+   └─> Receive OrderReceivedMessage
+   └─> Create order entity
+   └─> Check inventory
+   └─> Publish InventoryUpdateMessage (RESERVE)
        └─> Exchange: symbotic.simulation
        └─> Routing Key: sim.inventory.update
 
 4. Inventory Manager
-   └─> 接收 InventoryUpdateMessage
-   └─> 预留库存
-   └─> 检查是否需要补货
+   └─> Receive InventoryUpdateMessage
+   └─> Reserve inventory
+   └─> Check if replenishment is needed
 
 5. Order Manager
-   └─> 处理订单
-   └─> 发布 InventoryUpdateMessage (DEDUCT)
+   └─> Process order
+   └─> Publish InventoryUpdateMessage (DEDUCT)
        └─> Exchange: symbotic.simulation
        └─> Routing Key: sim.inventory.update
 
 6. Inventory Manager
-   └─> 接收 InventoryUpdateMessage
-   └─> 扣除库存
-   └─> 检查是否需要补货
+   └─> Receive InventoryUpdateMessage
+   └─> Deduct inventory
+   └─> Check if replenishment is needed
 
 7. Order Manager
-   └─> 更新订单状态为 COMPLETED
-   └─> 发布 OrderProcessedMessage
+   └─> Update order status to COMPLETED
+   └─> Publish OrderProcessedMessage
        └─> Exchange: symbotic.simulation
        └─> Routing Key: sim.order.processed
-   └─> 输出日志: [HH:mm:ss] ord-000001 completed successfully
+   └─> Output log: [HH:mm:ss] ord-000001 completed successfully
 ```
 
-## 数据模型
+## Data Model
 
-### Order (订单)
-- `orderId`: 订单ID
-- `orderType`: 订单类型 (PICKUP/DELIVERY)
-- `status`: 订单状态 (PENDING/RECEIVED/PROCESSING/COMPLETED/CANCELLED)
-- `orderPlacedTime`: 下单时间
-- `orderDueTime`: 到期时间
-- `items`: 订单项列表
-- `customerId`: 客户ID
+### Order (Order)
+- `orderId`: Order ID
+- `orderType`: Order type (PICKUP/DELIVERY)
+- `status`: Order status (PENDING/RECEIVED/PROCESSING/COMPLETED/CANCELLED)
+- `orderPlacedTime`: Order placed time
+- `orderDueTime`: Order due time
+- `items`: Order item list
+- `customerId`: Customer ID
 
-### OrderItem (订单项)
-- `sku`: 商品SKU
-- `quantity`: 数量
-- `temperatureZone`: 温度区域 (AMBIENT/CHILLED/FROZEN)
+### OrderItem (Order Item)
+- `sku`: Product SKU
+- `quantity`: Quantity
+- `temperatureZone`: Temperature zone (AMBIENT/CHILLED/FROZEN)
 
-### InventoryItem (库存项)
-- `sku`: 商品SKU
-- `name`: 商品名称
-- `quantity`: 总库存数量
-- `reservedQuantity`: 预留数量
-- `temperatureZone`: 温度区域
-- `lowStockThreshold`: 低库存阈值
+### InventoryItem (Inventory Item)
+- `sku`: Product SKU
+- `name`: Product name
+- `quantity`: Total inventory quantity
+- `reservedQuantity`: Reserved quantity
+- `temperatureZone`: Temperature zone
+- `lowStockThreshold`: Low stock threshold
 
-### OrderCSVRecord (CSV 订单记录)
-- `orderId`: 订单ID
-- `orderType`: 订单类型
-- `orderPlacedTime`: 下单时间（字符串格式）
-- `orderDueTime`: 到期时间（字符串格式）
-- `customerId`: 客户ID
-- `sku`: 商品SKU
-- `quantity`: 数量
-- `temperatureZone`: 温度区域
+### OrderCSVRecord (CSV Order Record)
+- `orderId`: Order ID
+- `orderType`: Order type
+- `orderPlacedTime`: Order placed time (string format)
+- `orderDueTime`: Order due time (string format)
+- `customerId`: Customer ID
+- `sku`: Product SKU
+- `quantity`: Quantity
+- `temperatureZone`: Temperature zone
 
-## 消息类型
+## Message Types
 
 ### OrderReceivedMessage
 ```json
@@ -325,61 +323,61 @@
 }
 ```
 
-## 技术栈
+## Technology Stack
 
-- **框架**: Spring Boot 3.2.0
-- **消息队列**: RabbitMQ (Spring AMQP)
-- **数据库**: H2 (内存数据库，开发环境) / PostgreSQL (生产环境，Week 6 扩展)
+- **Framework**: Spring Boot 3.2.0
+- **Message Queue**: RabbitMQ (Spring AMQP)
+- **Database**: H2 (In-memory database, development environment) / PostgreSQL (Production environment, Week 6 extension)
 - **ORM**: Spring Data JPA
-- **CSV 处理**: OpenCSV
-- **监控**: Spring Boot Actuator + Micrometer Prometheus
-- **指标收集**: Prometheus
-- **可视化**: Grafana
-- **构建工具**: Maven
-- **Java版本**: 17
+- **CSV Processing**: OpenCSV
+- **Monitoring**: Spring Boot Actuator + Micrometer Prometheus
+- **Metrics Collection**: Prometheus
+- **Visualization**: Grafana
+- **Build Tool**: Maven
+- **Java Version**: 17
 
-## 配置说明
+## Configuration
 
-### application.yml 主要配置
+### Main application.yml Configuration
 
 ```yaml
 inventory:
-  # 模拟时钟配置
+  # Simulation clock configuration
   simulation:
-    sim-start-time: "2024-01-13T08:00:00"  # 模拟开始时间
-    sim-end-time: "2024-01-13T18:00:00"    # 模拟结束时间
-    tick-seconds: 1                        # 每次 tick 增加的秒数
-    tick-interval-ms: 1000                 # tick 间隔（毫秒）
-    speed-factor: 1.0                      # 加速因子
+    sim-start-time: "2024-01-13T08:00:00"  # Simulation start time
+    sim-end-time: "2024-01-13T18:00:00"    # Simulation end time
+    tick-seconds: 1                        # Seconds to advance per tick
+    tick-interval-ms: 1000                 # Tick interval (milliseconds)
+    speed-factor: 1.0                      # Speed factor
   
-  # 订单注入器配置
+  # Order injector configuration
   order-injector:
-    use-csv: true                          # 使用 CSV 文件
-    csv-file: data/orders_sample.csv       # CSV 文件路径
+    use-csv: true                          # Use CSV file
+    csv-file: data/orders_sample.csv       # CSV file path
   
-  # 库存配置
+  # Inventory configuration
   inventory:
-    initial-stock: 1000                    # 初始库存
-    low-stock-threshold: 100               # 低库存阈值
-    replenishment-quantity: 500            # 补货数量
+    initial-stock: 1000                    # Initial stock
+    low-stock-threshold: 100               # Low stock threshold
+    replenishment-quantity: 500            # Replenishment quantity
 ```
 
-## API 端点
+## API Endpoints
 
-### 订单相关
-- `GET /api/orders` - 获取所有订单
-- `GET /api/orders/{orderId}` - 获取指定订单
+### Order Related
+- `GET /api/orders` - Get all orders
+- `GET /api/orders/{orderId}` - Get specific order
 
-### 库存相关
-- `GET /api/inventory/{sku}` - 获取指定SKU的库存
-- `POST /api/inventory/initialize?sku=XXX&quantity=100&temperatureZone=AMBIENT` - 初始化库存
+### Inventory Related
+- `GET /api/inventory/{sku}` - Get inventory for specific SKU
+- `POST /api/inventory/initialize?sku=XXX&quantity=100&temperatureZone=AMBIENT` - Initialize inventory
 
-### 健康检查
-- `GET /api/health` - 检查应用和 RabbitMQ 连接状态
+### Health Check
+- `GET /api/health` - Check application and RabbitMQ connection status
 
-## CSV 订单格式
+## CSV Order Format
 
-系统使用**长格式 CSV**（每行一个订单项）：
+The system uses **long-format CSV** (one order item per line):
 
 ```csv
 ORDER_ID,ORDER_TYPE,ORDER_PLACED_TIME,ORDER_DUE_TIME,CUSTOMER_ID,SKU,QUANTITY,TEMPERATURE_ZONE
@@ -387,146 +385,146 @@ ORD-000001,PICKUP,2024-01-13T08:00:00,2024-01-13T12:00:00,CUST-001,SKU-001,2,AMB
 ORD-000001,PICKUP,2024-01-13T08:00:00,2024-01-13T12:00:00,CUST-001,SKU-003,1,CHILLED
 ```
 
-详细格式说明请参考: [CSV_ORDER_FORMAT.md](CSV_ORDER_FORMAT.md)
+For detailed format specifications, refer to: [CSV_ORDER_FORMAT.md](CSV_ORDER_FORMAT.md)
 
-## 运行说明
+## Running Instructions
 
-1. **启动 RabbitMQ**
+1. **Start RabbitMQ**
    ```bash
    docker-compose up -d
    ```
 
-2. **配置模拟参数**（可选）
-   编辑 `application.yml` 中的 `inventory.simulation` 配置
+2. **Configure Simulation Parameters** (Optional)
+   Edit `inventory.simulation` configuration in `application.yml`
 
-3. **准备订单 CSV 文件**
-   编辑 `src/main/resources/data/orders_sample.csv`
+3. **Prepare Order CSV File**
+   Edit `src/main/resources/data/orders_sample.csv`
 
-4. **运行应用**
+4. **Run Application**
    ```bash
    mvn spring-boot:run
    ```
 
-5. **查看运行日志**
-   - 日志格式：`[HH:mm:ss] ord-000001 completed successfully`
-   - 模拟时钟会在配置的时间范围内运行
+5. **View Runtime Logs**
+   - Log format: `[HH:mm:ss] ord-000001 completed successfully`
+   - Simulation clock runs within configured time range
 
-6. **访问 H2 控制台**
+6. **Access H2 Console**
    - URL: http://localhost:8080/h2-console
    - JDBC URL: jdbc:h2:mem:inventorydb
    - Username: sa
-   - Password: (空)
+   - Password: (empty)
 
-7. **访问 RabbitMQ 管理界面**
+7. **Access RabbitMQ Management Interface**
    - URL: http://localhost:15672
    - Username: guest
    - Password: guest
 
-8. **访问监控系统**
+8. **Access Monitoring System**
    - Prometheus UI: http://localhost:9090
    - Grafana Dashboard: http://localhost:3000
-   - 默认账号: admin/admin
-   - 在 Grafana 中添加 Prometheus 数据源（URL: `http://prometheus:9090`）
+   - Default account: admin/admin
+   - Add Prometheus data source in Grafana (URL: `http://prometheus:9090`)
 
-## 扩展功能（Week 6 - 可选）
+## Extension Features (Week 6 - Optional)
 
-### 数据库迁移到 PostgreSQL
+### Database Migration to PostgreSQL
 
-**为什么需要迁移？**
+**Why Migrate?**
 
-项目初始使用 **H2 内存数据库**，适合快速开发和学习：
-- ✅ 无需安装配置，启动快速
-- ✅ 适合学习和原型开发
+The project initially uses **H2 in-memory database**, suitable for rapid development and learning:
+- ✅ No installation/configuration needed, fast startup
+- ✅ Suitable for learning and prototyping
 
-但 H2 的限制：
-- ❌ 数据不持久化（应用重启数据丢失）
-- ❌ 不适合生产环境
-- ❌ 扩展性有限
+But H2 limitations:
+- ❌ Data not persistent (data lost on application restart)
+- ❌ Not suitable for production environment
+- ❌ Limited scalability
 
-**迁移到 PostgreSQL 的优势**：
-- ✅ **数据持久化**：数据不会因应用重启而丢失
-- ✅ **扩展性**：支持更大数据量和并发访问
-- ✅ **生产就绪**：适合部署到生产环境
-- ✅ **性能优化**：支持索引、查询优化等高级功能
+**Advantages of Migrating to PostgreSQL:**
+- ✅ **Data Persistence**: Data won't be lost on application restart
+- ✅ **Scalability**: Supports larger data volumes and concurrent access
+- ✅ **Production Ready**: Suitable for production deployment
+- ✅ **Performance Optimization**: Supports advanced features like indexes, query optimization
 
-**迁移步骤**：
-1. 添加 PostgreSQL 依赖到 `pom.xml`
-2. 在 `docker-compose.yml` 中添加 PostgreSQL 服务
-3. 更新 `application.yml` 数据库配置
-4. 配置数据库连接池（HikariCP）
-5. 测试数据持久化功能
+**Migration Steps:**
+1. Add PostgreSQL dependency to `pom.xml`
+2. Add PostgreSQL service to `docker-compose.yml`
+3. Update database configuration in `application.yml`
+4. Configure database connection pool (HikariCP)
+5. Test data persistence functionality
 
-详细说明请参考 [WEEKLY_PLAN.md](WEEKLY_PLAN.md) 的 Week 6 部分。
+For detailed instructions, refer to Week 6 section in [WEEKLY_PLAN.md](WEEKLY_PLAN.md).
 
-## 系统特点
+## System Features
 
-1. **模拟时钟系统**: 使用 SimulationClock 管理模拟时间，支持时间范围配置和加速运行
-2. **CSV 订单来源**: 使用长格式 CSV 文件，可扩展性强，支持任意 SKU
-3. **消息驱动架构**: 使用 RabbitMQ 实现组件间解耦
-4. **异步处理**: 订单处理和库存管理异步进行
-5. **自动补货**: 库存低于阈值时自动触发补货
-6. **事务支持**: 使用 Spring 事务管理确保数据一致性
-7. **优化的日志**: 简洁的日志格式，减少噪音
-8. **可扩展性**: 易于添加新的消息处理者和业务逻辑
-9. **监控与可视化**: 集成 Prometheus + Grafana，实时监控订单处理指标、成功率、处理时间等
+1. **Simulation Clock System**: Uses SimulationClock to manage simulation time with configurable time ranges and speed acceleration
+2. **CSV Order Source**: Uses long-format CSV files with high scalability, supports any SKU
+3. **Message-Driven Architecture**: Uses RabbitMQ to achieve component decoupling
+4. **Asynchronous Processing**: Order processing and inventory management are asynchronous
+5. **Auto-Replenishment**: Automatically triggers replenishment when inventory falls below threshold
+6. **Transaction Support**: Uses Spring transaction management to ensure data consistency
+7. **Optimized Logging**: Concise log format, reduces noise
+8. **Extensibility**: Easy to add new message handlers and business logic
+9. **Monitoring & Visualization**: Integrated Prometheus + Grafana for real-time monitoring of order processing metrics, success rates, processing times, etc.
 
-## 扩展建议
+## Extension Recommendations
 
-### Week 6: 数据库迁移到 PostgreSQL（推荐）
+### Week 6: Database Migration to PostgreSQL (Recommended)
 
-**目标**：将系统从 H2 迁移到 PostgreSQL，提升系统扩展性和生产就绪性
+**Goal**: Migrate system from H2 to PostgreSQL to improve scalability and production readiness
 
-**优势**：
-- ✅ 数据持久化，应用重启不丢失数据
-- ✅ 支持更大数据量和并发访问
-- ✅ 适合部署到生产环境
-- ✅ 学习生产级数据库配置和使用
+**Advantages**:
+- ✅ Data persistence, data not lost on application restart
+- ✅ Supports larger data volumes and concurrent access
+- ✅ Suitable for production deployment
+- ✅ Learn production-level database configuration and usage
 
-**实施步骤**：
-1. 添加 PostgreSQL 依赖
-2. 在 docker-compose.yml 中添加 PostgreSQL 服务
-3. 更新 application.yml 数据库配置
-4. 测试数据持久化功能
+**Implementation Steps**:
+1. Add PostgreSQL dependency
+2. Add PostgreSQL service to docker-compose.yml
+3. Update database configuration in application.yml
+4. Test data persistence functionality
 
-详细说明请参考 [WEEKLY_PLAN.md](WEEKLY_PLAN.md) 的 Week 6 部分。
+For detailed instructions, refer to Week 6 section in [WEEKLY_PLAN.md](WEEKLY_PLAN.md).
 
-### Week 7: 测试与 API 文档（可选）
+### Week 7: Testing and API Documentation (Optional)
 
-**目标**：提升代码质量和 API 可用性
+**Goal**: Improve code quality and API usability
 
-**任务清单**：
-- 单元测试和集成测试编写
-- Swagger/OpenAPI API 文档生成
-- Redis 缓存优化（可选）
+**Task List**:
+- Write unit tests and integration tests
+- Generate Swagger/OpenAPI API documentation
+- Redis cache optimization (optional)
 
-**学习价值**：
-- 理解测试驱动开发（TDD）
-- 掌握 API 文档编写规范
-- 学习缓存优化策略
+**Learning Value**:
+- Understand Test-Driven Development (TDD)
+- Master API documentation writing standards
+- Learn cache optimization strategies
 
-详细说明请参考 [WEEKLY_PLAN.md](WEEKLY_PLAN.md) 的 Week 7 部分。
+For detailed instructions, refer to Week 7 section in [WEEKLY_PLAN.md](WEEKLY_PLAN.md).
 
-### Week 8: 部署与优化（可选）
+### Week 8: Deployment and Optimization (Optional)
 
-**目标**：实现生产就绪的部署方案
+**Goal**: Achieve production-ready deployment solution
 
-**任务清单**：
-- Docker 容器化应用
-- CI/CD 流程配置
-- 性能测试与优化
+**Task List**:
+- Docker containerization of application
+- CI/CD pipeline configuration
+- Performance testing and optimization
 
-**学习价值**：
-- 理解容器化部署
-- 掌握 CI/CD 流程
-- 学习性能优化方法
+**Learning Value**:
+- Understand containerized deployment
+- Master CI/CD pipeline
+- Learn performance optimization methods
 
-详细说明请参考 [WEEKLY_PLAN.md](WEEKLY_PLAN.md) 的 Week 8 部分。
+For detailed instructions, refer to Week 8 section in [WEEKLY_PLAN.md](WEEKLY_PLAN.md).
 
-### 其他扩展建议（可选）
+### Other Extension Recommendations (Optional)
 
-1. **添加更多组件**: 如 Pick Station、Tote Manager 等
-2. **分布式追踪**: 集成 Zipkin 或 Jaeger
-3. **安全增强**: 添加认证授权、API 安全等
-4. **消息重试机制**: 实现消息处理失败重试
-5. **批量处理优化**: 实现批量订单处理
-6. **模拟时间同步**: 支持多实例之间的模拟时间同步
+1. **Add More Components**: Such as Pick Station, Tote Manager, etc.
+2. **Distributed Tracing**: Integrate Zipkin or Jaeger
+3. **Security Enhancement**: Add authentication, authorization, API security, etc.
+4. **Message Retry Mechanism**: Implement message processing failure retry
+5. **Batch Processing Optimization**: Implement batch order processing
+6. **Simulation Time Synchronization**: Support simulation time synchronization across multiple instances

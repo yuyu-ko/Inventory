@@ -1,54 +1,54 @@
-# 如何开始这个项目
+# How to Start This Project
 
-## 🎯 项目说明
+## 🎯 Project Description
 
-这是一个**需要你自己实现**的项目。项目提供了：
-- ✅ 系统架构设计
-- ✅ 实现方向指导
-- ✅ 代码结构提示
-- ❌ **不提供完整代码**
+This is a project that **requires your own implementation**. The project provides:
+- ✅ System architecture design
+- ✅ Implementation guidance
+- ✅ Code structure hints
+- ❌ **Does not provide complete code**
 
-## 📚 第一步：阅读文档
+## 📚 Step 1: Read Documentation
 
-### 1. 先读这个（5分钟）
-- **[STUDENT_GUIDE.md](STUDENT_GUIDE.md)** - 了解项目是什么
+### 1. Read This First (5 minutes)
+- **[PROJECT_GUIDE.md](PROJECT_GUIDE.md)** - Understand what the project is
 
-### 2. 再看这个（10分钟）
-- **[IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md)** - 了解需要实现什么
+### 2. Then Read This (10 minutes)
+- **[IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md)** - Understand what needs to be implemented
 
-### 3. 然后看这个（15分钟）
-- **[CODE_TEMPLATES.md](CODE_TEMPLATES.md)** - 了解代码结构（**仅参考，不要复制**）
+### 3. Then Read This (15 minutes)
+- **[CODE_TEMPLATES.md](CODE_TEMPLATES.md)** - Understand code structure (**reference only, do not copy**)
 
-### 4. 规划时间（5分钟）
-- **[WEEKLY_PLAN.md](WEEKLY_PLAN.md)** - 制定你的实现计划
+### 4. Plan Time (5 minutes)
+- **[WEEKLY_PLAN.md](WEEKLY_PLAN.md)** - Create your implementation plan
 
-## 🛠️ 第二步：搭建项目
+## 🛠️ Step 2: Set Up Project
 
-### 1. 创建 Spring Boot 项目
+### 1. Create Spring Boot Project
 
-**方式 1：使用 Spring Initializr**
-1. 访问 https://start.spring.io/
-2. 选择：
+**Method 1: Using Spring Initializr**
+1. Visit https://start.spring.io/
+2. Select:
    - Project: Maven
    - Language: Java
    - Spring Boot: 3.2.0
    - Packaging: Jar
    - Java: 17
-3. Dependencies 添加：
+3. Add Dependencies:
    - Spring Web
    - Spring Data JPA
    - H2 Database
    - Spring AMQP (RabbitMQ)
    - Lombok
-4. Generate 下载项目
+4. Generate and download project
 
-**方式 2：使用 IDE**
+**Method 2: Using IDE**
 - IntelliJ IDEA: File → New → Project → Spring Initializr
-- Eclipse: 使用 Spring Tool Suite
+- Eclipse: Use Spring Tool Suite
 
-### 2. 添加额外依赖
+### 2. Add Additional Dependencies
 
-在 `pom.xml` 中添加：
+Add to `pom.xml`:
 ```xml
 <!-- OpenCSV -->
 <dependency>
@@ -58,110 +58,110 @@
 </dependency>
 ```
 
-### 3. 配置 RabbitMQ
+### 3. Configure RabbitMQ
 
-安装并启动 RabbitMQ（参考 [STUDENT_QUICKSTART.md](STUDENT_QUICKSTART.md)）
+Install and start RabbitMQ (refer to [QUICKSTART.md](QUICKSTART.md))
 
-### 4. 配置文件
+### 4. Configuration Files
 
-创建 `application.yml`（参考项目中的配置，但**不要复制完整代码**）
+Create `application.yml` (refer to project configuration, but **do not copy complete code**)
 
-## 📝 第三步：开始实现
+## 📝 Step 3: Start Implementation
 
-### Week 1: 基础架构
+### Week 1: Foundation
 
-1. **创建实体类**
+1. **Create Entity Classes**
    - Order.java
    - OrderItem.java
    - InventoryItem.java
-   - 参考 [CODE_TEMPLATES.md](CODE_TEMPLATES.md) 的结构
+   - Refer to structure in [CODE_TEMPLATES.md](CODE_TEMPLATES.md)
 
-2. **创建 Repository**
+2. **Create Repositories**
    - OrderRepository.java
    - InventoryItemRepository.java
-   - 继承 `JpaRepository`
+   - Extend `JpaRepository`
 
-3. **配置 RabbitMQ**
-   - 创建 RabbitMQConfig.java
-   - 定义 Exchange、Queue、Binding
+3. **Configure RabbitMQ**
+   - Create RabbitMQConfig.java
+   - Define Exchange, Queue, Binding
 
-### Week 2-4: 按照计划实现
+### Week 2-4: Implement According to Plan
 
-按照 [WEEKLY_PLAN.md](WEEKLY_PLAN.md) 的每日计划逐步实现
+Implement step by step according to daily plan in [WEEKLY_PLAN.md](WEEKLY_PLAN.md)
 
-### Week 5-6: 进阶和扩展功能（可选）
+### Week 5-6: Advanced and Extension Features (Optional)
 
-- **Week 5**: 监控系统集成（Prometheus + Grafana + Loki）
-- **Week 6**: 数据库迁移到 PostgreSQL（提升扩展性和生产就绪性）
+- **Week 5**: Monitoring system integration (Prometheus + Grafana + Loki)
+- **Week 6**: Database migration to PostgreSQL (improve scalability and production readiness)
 
-## 💡 实现原则
+## 💡 Implementation Principles
 
-### ✅ 应该做的
-- 理解需求后再写代码
-- 参考代码模板，但自己实现
-- 每实现一个功能就测试
-- 遇到问题先查文档
-- 记录遇到的问题和解决方案
+### ✅ Should Do
+- Understand requirements before writing code
+- Reference code templates but implement yourself
+- Test after implementing each feature
+- Check documentation first when encountering problems
+- Record problems encountered and solutions
 
-### ❌ 不应该做的
-- 不要直接复制代码模板
-- 不要跳过理解直接实现
-- 不要一次实现太多功能
-- 不要害怕遇到问题
-- 不要遇到问题就放弃
+### ❌ Should Not Do
+- Don't directly copy code templates
+- Don't skip understanding and implement directly
+- Don't implement too many features at once
+- Don't be afraid of encountering problems
+- Don't give up when encountering problems
 
-## 🎓 学习路径
+## 🎯 Learning Path
 
 ```
-理解需求 → 搭建项目 → 实现实体类 → 实现Repository 
-→ 实现Service → 实现消息处理 → 实现CSV读取 → 实现时钟
-→ 实现API → 测试完善 → 编写文档
+Understand Requirements → Set Up Project → Implement Entity Classes → Implement Repositories 
+→ Implement Services → Implement Message Processing → Implement CSV Reading → Implement Clock
+→ Implement APIs → Test and Refine → Write Documentation
 ```
 
-## ❓ 遇到问题？
+## ❓ Encountering Problems?
 
-1. **查看文档**
-   - [IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md) 的 FAQ
-   - [STUDENT_QUICKSTART.md](STUDENT_QUICKSTART.md) 的常见问题
+1. **Check Documentation**
+   - FAQ in [IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md)
+   - Common problems in [QUICKSTART.md](QUICKSTART.md)
 
-2. **查看官方文档**
-   - Spring Boot 文档
-   - RabbitMQ 文档
+2. **Check Official Documentation**
+   - Spring Boot documentation
+   - RabbitMQ documentation
 
-3. **查看日志**
-   - 仔细阅读错误信息
-   - 查看应用日志
+3. **Check Logs**
+   - Read error messages carefully
+   - Check application logs
 
-4. **寻求帮助**
-   - 询问老师
-   - 与同学讨论
+4. **Seek Help**
+   - Ask mentors
+   - Discuss with team members
    - Stack Overflow
 
-## ✅ 检查清单
+## ✅ Checklist
 
-开始实现前，确认：
-- [ ] 已阅读 STUDENT_GUIDE.md
-- [ ] 已阅读 IMPLEMENTATION_GUIDE.md
-- [ ] 已理解系统架构
-- [ ] 已搭建好开发环境
-- [ ] 已创建 Spring Boot 项目
-- [ ] 已配置 RabbitMQ
-- [ ] 已准备好开始编码
+Before starting implementation, confirm:
+- [ ] Have read PROJECT_GUIDE.md
+- [ ] Have read IMPLEMENTATION_GUIDE.md
+- [ ] Understand system architecture
+- [ ] Have set up development environment
+- [ ] Have created Spring Boot project
+- [ ] Have configured RabbitMQ
+- [ ] Ready to start coding
 
-## 🚀 开始你的实现之旅
+## 🚀 Start Your Implementation Journey
 
-现在你有了：
-- ✅ 清晰的架构设计
-- ✅ 详细的实现指南
-- ✅ 代码结构提示
-- ✅ 四周完成计划
+Now you have:
+- ✅ Clear architecture design
+- ✅ Detailed implementation guide
+- ✅ Code structure hints
+- ✅ 8-week completion plan
 
-**下一步：开始编码！**
+**Next step: Start coding!**
 
-记住：
-- **代码需要你自己写**
-- **遇到问题很正常**
-- **每天进步一点点**
-- **完成比完美更重要**
+Remember:
+- **You need to write the code yourself**
+- **Encountering problems is normal**
+- **Make progress little by little each day**
+- **Completion is more important than perfection**
 
-**加油！💪**
+**Good luck! 💪**
