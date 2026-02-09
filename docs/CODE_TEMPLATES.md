@@ -1,6 +1,5 @@
 # Code Template Reference
 
-> **Note**: These are only **templates and hints** to help you understand what needs to be implemented. **Do not copy directly**. You need to understand and implement it yourself.
 
 ## 📋 Entity Class Templates
 
